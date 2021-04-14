@@ -1246,7 +1246,7 @@ library(tidymv)
 
 #graphical parameters
 smooth.param<-0.5
-knots<-6
+
 
 
 ##########################################
@@ -1256,9 +1256,10 @@ knots<-6
 newd <- with(ABIPN_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
+knots<-round(length(unique(ABIPN_summary$year))/5) #only allow max of 1 knot every ~5 years
 
 ABIPN.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-                data=ABIPN_summary)
+                data=ABIPN_summary, family="quasipoisson")
 summary(ABIPN.gam0)
 ABIPN.pred<-predict.gam(ABIPN.gam0, newd, se.fit = T, type="response")
 ABIPN.pred<-cbind(newd,ABIPN.pred)
@@ -1285,9 +1286,9 @@ ABIPN.year
 newd <- with(BURSI_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(BURSI_summary$year))/5) #only allow max of 1 knot every ~5 years
 BURSI.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-                data=BURSI_summary, family="negbin")
+                data=BURSI_summary, family="quasipoisson")
 summary(BURSI.gam0)
 BURSI.pred<-predict.gam(BURSI.gam0, newd, se.fit = T, type="response")
 BURSI.pred<-cbind(newd,BURSI.pred)
@@ -1316,9 +1317,9 @@ BURSI.year
 newd <- with(C7_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(C7_summary$year))/5) #only allow max of 1 knot every ~5 years
 C7.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-             data=C7_summary)
+             data=C7_summary, family="quasipoisson")
 summary(C7.gam0)
 C7.pred<-predict.gam(C7.gam0, newd, se.fit = T, type="response")
 C7.pred<-cbind(newd,C7.pred)
@@ -1346,9 +1347,9 @@ C7.year
 newd <- with(CMAC_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(CMAC_summary$year))/5) #only allow max of 1 knot every ~5 years
 CMAC.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-               data=CMAC_summary)
+               data=CMAC_summary, family="quasipoisson")
 summary(CMAC.gam0)
 CMAC.pred<-predict.gam(CMAC.gam0, newd, se.fit = T, type="response")
 CMAC.pred<-cbind(newd,CMAC.pred)
@@ -1374,9 +1375,9 @@ CMAC.year
 newd <- with(CSTIG_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(CSTIG_summary$year))/5) #only allow max of 1 knot every ~5 years
 CSTIG.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-                data=CSTIG_summary)
+                data=CSTIG_summary, family="quasipoisson")
 summary(CSTIG.gam0)
 CSTIG.pred<-predict.gam(CSTIG.gam0, newd, se.fit = T, type="response")
 CSTIG.pred<-cbind(newd,CSTIG.pred)
@@ -1402,9 +1403,9 @@ CSTIG.year
 newd <- with(CTRIF_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(CTRIF_summary$year))/5) #only allow max of 1 knot every ~5 years
 CTRIF.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-                data=CTRIF_summary)
+                data=CTRIF_summary, family="quasipoisson")
 summary(CTRIF.gam0)
 CTRIF.pred<-predict.gam(CTRIF.gam0, newd, se.fit = T, type="response")
 CTRIF.pred<-cbind(newd,CTRIF.pred)
@@ -1432,9 +1433,9 @@ CTRIF.year
 newd <- with(CYCSP_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(CYCSP_summary$year))/5) #only allow max of 1 knot every ~5 years
 CYCSP.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-                data=CYCSP_summary)
+                data=CYCSP_summary, family="quasipoisson")
 summary(CYCSP.gam0)
 CYCSP.pred<-predict.gam(CYCSP.gam0, newd, se.fit = T, type="response")
 CYCSP.pred<-cbind(newd,CYCSP.pred)
@@ -1460,9 +1461,9 @@ CYCSP.year
 newd <- with(H13_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(H13_summary$year))/5) #only allow max of 1 knot every ~5 years
 H13.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-              data=H13_summary)
+              data=H13_summary, family="quasipoisson")
 summary(H13.gam0)
 H13.pred<-predict.gam(H13.gam0, newd, se.fit = T, type="response")
 H13.pred<-cbind(newd,H13.pred)
@@ -1489,9 +1490,9 @@ H13.year
 newd <- with(HAXY_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(HAXY_summary$year))/5) #only allow max of 1 knot every ~5 years
 HAXY.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-               data=HAXY_summary)
+               data=HAXY_summary, family="quasipoisson")
 summary(HAXY.gam0)
 HAXY.pred<-predict.gam(HAXY.gam0, newd, se.fit = T, type="response")
 HAXY.pred<-cbind(newd,HAXY.pred)
@@ -1518,9 +1519,9 @@ HAXY.year
 newd <- with(HCONV_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(HCONV_summary$year))/5) #only allow max of 1 knot every ~5 years
 HCONV.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-                data=HCONV_summary)
+                data=HCONV_summary, family="quasipoisson")
 summary(HCONV.gam0)
 HCONV.pred<-predict.gam(HCONV.gam0, newd, se.fit = T, type="response")
 HCONV.pred<-cbind(newd,HCONV.pred)
@@ -1547,9 +1548,9 @@ HCONV.year
 newd <- with(HGLAC_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(HGLAC_summary$year))/5) #only allow max of 1 knot every ~5 years
 HGLAC.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-                data=HGLAC_summary)
+                data=HGLAC_summary, family="quasipoisson")
 summary(HGLAC.gam0)
 HGLAC.pred<-predict.gam(HGLAC.gam0, newd, se.fit = T, type="response")
 HGLAC.pred<-cbind(newd,HGLAC.pred)
@@ -1574,9 +1575,9 @@ HGLAC.year
 newd <- with(HPARN_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(HPARN_summary$year))/5) #only allow max of 1 knot every ~5 years
 HPARN.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-                data=HPARN_summary)
+                data=HPARN_summary, family="quasipoisson")
 summary(HPARN.gam0)
 HPARN.pred<-predict.gam(HPARN.gam0, newd, se.fit = T, type="response")
 HPARN.pred<-cbind(newd,HPARN.pred)
@@ -1601,9 +1602,9 @@ HPARN.year
 newd <- with(HVAR_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(HVAR_summary$year))/5) #only allow max of 1 knot every ~5 years
 HVAR.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-               data=HVAR_summary)
+               data=HVAR_summary, family="quasipoisson")
 summary(HVAR.gam0)
 HVAR.pred<-predict.gam(HVAR.gam0, newd, se.fit = T, type="response")
 HVAR.pred<-cbind(newd,HVAR.pred)
@@ -1629,9 +1630,9 @@ HVAR.year
 newd <- with(PQUA_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(PQUA_summary$year))/5) #only allow max of 1 knot every ~5 years
 PQUA.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-               data=PQUA_summary)
+               data=PQUA_summary, family="quasipoisson")
 summary(PQUA.gam0)
 PQUA.pred<-predict.gam(PQUA.gam0, newd, se.fit = T, type="response")
 PQUA.pred<-cbind(newd,PQUA.pred)
@@ -1659,9 +1660,9 @@ PQUA.year
 newd <- with(nativetot,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(nativetot$year))/5) #only allow max of 1 knot every ~5 years
 native.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-                 data=nativetot)
+                 data=nativetot, family="quasipoisson")
 summary(native.gam0)
 native.pred<-predict.gam(native.gam0, newd, se.fit = T, type="response")
 native.pred<-cbind(newd,native.pred)
@@ -1690,9 +1691,9 @@ native.year
 newd <- with(invasivetot,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(invasivetot$year))/5) #only allow max of 1 knot every ~5 years
 invasive.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-                   data=invasivetot)
+                   data=invasivetot, family="quasipoisson")
 summary(invasive.gam0)
 invasive.pred<-predict.gam(invasive.gam0, newd, se.fit = T, type="response")
 invasive.pred<-cbind(newd,invasive.pred)
@@ -1719,9 +1720,9 @@ invasive.year
 newd <- with(all_tot,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-
+knots<-round(length(unique(all_tot$year))/5) #only allow max of 1 knot every ~5 years
 all_gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-              data=all_tot)
+              data=all_tot, family="quasipoisson")
 summary(all_gam0)
 all_pred<-predict.gam(all_gam0, newd, se.fit = T, type="response")
 all_pred<-cbind(newd,all_pred)

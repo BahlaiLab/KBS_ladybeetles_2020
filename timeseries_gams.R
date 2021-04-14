@@ -1,6 +1,6 @@
 # start by cleaning data
 
-
+#######################################
 #bring data in from 
 PQUA<-read.csv("data/PQUA2020comb.csv",
                header=T)
@@ -1257,10 +1257,10 @@ newd <- with(ABIPN_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
 
-ABIPN.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=6)+offset(log(TRAPS)),
+ABIPN.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                 data=ABIPN_summary)
 summary(ABIPN.gam0)
-ABIPN.pred<-predict.gam(ABIPN.gam0, newd, se.fit = T, type="link")
+ABIPN.pred<-predict.gam(ABIPN.gam0, newd, se.fit = T, type="response")
 ABIPN.pred<-cbind(newd,ABIPN.pred)
 ABIPN.pred$lower<-ABIPN.pred$fit-2*ABIPN.pred$se.fit
 ABIPN.pred$upper<-ABIPN.pred$fit+2*ABIPN.pred$se.fit
@@ -1286,10 +1286,10 @@ newd <- with(BURSI_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
 
-BURSI.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=6)+offset(log(TRAPS)),
-                data=BURSI_summary)
+BURSI.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
+                data=BURSI_summary, family="negbin")
 summary(BURSI.gam0)
-BURSI.pred<-predict.gam(BURSI.gam0, newd, se.fit = T, type="link")
+BURSI.pred<-predict.gam(BURSI.gam0, newd, se.fit = T, type="response")
 BURSI.pred<-cbind(newd,BURSI.pred)
 BURSI.pred$lower<-BURSI.pred$fit-2*BURSI.pred$se.fit
 BURSI.pred$upper<-BURSI.pred$fit+2*BURSI.pred$se.fit
@@ -1320,7 +1320,7 @@ newd <- with(C7_summary,
 C7.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
              data=C7_summary)
 summary(C7.gam0)
-C7.pred<-predict.gam(C7.gam0, newd, se.fit = T, type="link")
+C7.pred<-predict.gam(C7.gam0, newd, se.fit = T, type="response")
 C7.pred<-cbind(newd,C7.pred)
 C7.pred$lower<-C7.pred$fit-2*C7.pred$se.fit
 C7.pred$upper<-C7.pred$fit+2*C7.pred$se.fit
@@ -1350,7 +1350,7 @@ newd <- with(CMAC_summary,
 CMAC.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                data=CMAC_summary)
 summary(CMAC.gam0)
-CMAC.pred<-predict.gam(CMAC.gam0, newd, se.fit = T, type="link")
+CMAC.pred<-predict.gam(CMAC.gam0, newd, se.fit = T, type="response")
 CMAC.pred<-cbind(newd,CMAC.pred)
 CMAC.pred$lower<-CMAC.pred$fit-2*CMAC.pred$se.fit
 CMAC.pred$upper<-CMAC.pred$fit+2*CMAC.pred$se.fit
@@ -1378,7 +1378,7 @@ newd <- with(CSTIG_summary,
 CSTIG.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                 data=CSTIG_summary)
 summary(CSTIG.gam0)
-CSTIG.pred<-predict.gam(CSTIG.gam0, newd, se.fit = T, type="link")
+CSTIG.pred<-predict.gam(CSTIG.gam0, newd, se.fit = T, type="response")
 CSTIG.pred<-cbind(newd,CSTIG.pred)
 CSTIG.pred$lower<-CSTIG.pred$fit-2*CSTIG.pred$se.fit
 CSTIG.pred$upper<-CSTIG.pred$fit+2*CSTIG.pred$se.fit
@@ -1406,7 +1406,7 @@ newd <- with(CTRIF_summary,
 CTRIF.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                 data=CTRIF_summary)
 summary(CTRIF.gam0)
-CTRIF.pred<-predict.gam(CTRIF.gam0, newd, se.fit = T, type="link")
+CTRIF.pred<-predict.gam(CTRIF.gam0, newd, se.fit = T, type="response")
 CTRIF.pred<-cbind(newd,CTRIF.pred)
 CTRIF.pred$lower<-CTRIF.pred$fit-2*CTRIF.pred$se.fit
 CTRIF.pred$upper<-CTRIF.pred$fit+2*CTRIF.pred$se.fit
@@ -1436,7 +1436,7 @@ newd <- with(CYCSP_summary,
 CYCSP.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                 data=CYCSP_summary)
 summary(CYCSP.gam0)
-CYCSP.pred<-predict.gam(CYCSP.gam0, newd, se.fit = T, type="link")
+CYCSP.pred<-predict.gam(CYCSP.gam0, newd, se.fit = T, type="response")
 CYCSP.pred<-cbind(newd,CYCSP.pred)
 CYCSP.pred$lower<-CYCSP.pred$fit-2*CYCSP.pred$se.fit
 CYCSP.pred$upper<-CYCSP.pred$fit+2*CYCSP.pred$se.fit
@@ -1464,7 +1464,7 @@ newd <- with(H13_summary,
 H13.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
               data=H13_summary)
 summary(H13.gam0)
-H13.pred<-predict.gam(H13.gam0, newd, se.fit = T, type="link")
+H13.pred<-predict.gam(H13.gam0, newd, se.fit = T, type="response")
 H13.pred<-cbind(newd,H13.pred)
 H13.pred$lower<-H13.pred$fit-2*H13.pred$se.fit
 H13.pred$upper<-H13.pred$fit+2*H13.pred$se.fit
@@ -1493,7 +1493,7 @@ newd <- with(HAXY_summary,
 HAXY.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                data=HAXY_summary)
 summary(HAXY.gam0)
-HAXY.pred<-predict.gam(HAXY.gam0, newd, se.fit = T, type="link")
+HAXY.pred<-predict.gam(HAXY.gam0, newd, se.fit = T, type="response")
 HAXY.pred<-cbind(newd,HAXY.pred)
 HAXY.pred$lower<-HAXY.pred$fit-2*HAXY.pred$se.fit
 HAXY.pred$upper<-HAXY.pred$fit+2*HAXY.pred$se.fit
@@ -1522,7 +1522,7 @@ newd <- with(HCONV_summary,
 HCONV.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                 data=HCONV_summary)
 summary(HCONV.gam0)
-HCONV.pred<-predict.gam(HCONV.gam0, newd, se.fit = T, type="link")
+HCONV.pred<-predict.gam(HCONV.gam0, newd, se.fit = T, type="response")
 HCONV.pred<-cbind(newd,HCONV.pred)
 HCONV.pred$lower<-HCONV.pred$fit-2*HCONV.pred$se.fit
 HCONV.pred$upper<-HCONV.pred$fit+2*HCONV.pred$se.fit
@@ -1551,7 +1551,7 @@ newd <- with(HGLAC_summary,
 HGLAC.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                 data=HGLAC_summary)
 summary(HGLAC.gam0)
-HGLAC.pred<-predict.gam(HGLAC.gam0, newd, se.fit = T, type="link")
+HGLAC.pred<-predict.gam(HGLAC.gam0, newd, se.fit = T, type="response")
 HGLAC.pred<-cbind(newd,HGLAC.pred)
 HGLAC.pred$lower<-HGLAC.pred$fit-2*HGLAC.pred$se.fit
 HGLAC.pred$upper<-HGLAC.pred$fit+2*HGLAC.pred$se.fit
@@ -1578,7 +1578,7 @@ newd <- with(HPARN_summary,
 HPARN.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                 data=HPARN_summary)
 summary(HPARN.gam0)
-HPARN.pred<-predict.gam(HPARN.gam0, newd, se.fit = T, type="link")
+HPARN.pred<-predict.gam(HPARN.gam0, newd, se.fit = T, type="response")
 HPARN.pred<-cbind(newd,HPARN.pred)
 HPARN.pred$lower<-HPARN.pred$fit-2*HPARN.pred$se.fit
 HPARN.pred$upper<-HPARN.pred$fit+2*HPARN.pred$se.fit
@@ -1605,7 +1605,7 @@ newd <- with(HVAR_summary,
 HVAR.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                data=HVAR_summary)
 summary(HVAR.gam0)
-HVAR.pred<-predict.gam(HVAR.gam0, newd, se.fit = T, type="link")
+HVAR.pred<-predict.gam(HVAR.gam0, newd, se.fit = T, type="response")
 HVAR.pred<-cbind(newd,HVAR.pred)
 HVAR.pred$lower<-HVAR.pred$fit-2*HVAR.pred$se.fit
 HVAR.pred$upper<-HVAR.pred$fit+2*HVAR.pred$se.fit
@@ -1633,7 +1633,7 @@ newd <- with(PQUA_summary,
 PQUA.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                data=PQUA_summary)
 summary(PQUA.gam0)
-PQUA.pred<-predict.gam(PQUA.gam0, newd, se.fit = T, type="link")
+PQUA.pred<-predict.gam(PQUA.gam0, newd, se.fit = T, type="response")
 PQUA.pred<-cbind(newd,PQUA.pred)
 PQUA.pred$lower<-PQUA.pred$fit-2*PQUA.pred$se.fit
 PQUA.pred$upper<-PQUA.pred$fit+2*PQUA.pred$se.fit
@@ -1663,7 +1663,7 @@ newd <- with(nativetot,
 native.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                  data=nativetot)
 summary(native.gam0)
-native.pred<-predict.gam(native.gam0, newd, se.fit = T, type="link")
+native.pred<-predict.gam(native.gam0, newd, se.fit = T, type="response")
 native.pred<-cbind(newd,native.pred)
 native.pred$lower<-native.pred$fit-2*native.pred$se.fit
 native.pred$upper<-native.pred$fit+2*native.pred$se.fit
@@ -1694,7 +1694,7 @@ newd <- with(invasivetot,
 invasive.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                    data=invasivetot)
 summary(invasive.gam0)
-invasive.pred<-predict.gam(invasive.gam0, newd, se.fit = T, type="link")
+invasive.pred<-predict.gam(invasive.gam0, newd, se.fit = T, type="response")
 invasive.pred<-cbind(newd,invasive.pred)
 invasive.pred$lower<-invasive.pred$fit-2*invasive.pred$se.fit
 invasive.pred$upper<-invasive.pred$fit+2*invasive.pred$se.fit
@@ -1723,7 +1723,7 @@ newd <- with(all_tot,
 all_gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
               data=all_tot)
 summary(all_gam0)
-all_pred<-predict.gam(all_gam0, newd, se.fit = T, type="link")
+all_pred<-predict.gam(all_gam0, newd, se.fit = T, type="response")
 all_pred<-cbind(newd,all_pred)
 all_pred$lower<-all_pred$fit-2*all_pred$se.fit
 all_pred$upper<-all_pred$fit+2*all_pred$se.fit
@@ -1753,4 +1753,12 @@ timeseries.stack
 
 pdf("plots/timeseries_stack.pdf", height=12, width=6)
 grid.draw(timeseries.stack)
+dev.off()
+
+timeseries.grouped<-plot_grid(native.year, invasive.year, all_year, 
+                            ncol=1, rel_widths=c(1), labels=c('A', 'B', 'C'), align="v")
+timeseries.grouped
+
+pdf("plots/timeseries_grouped.pdf", height=8, width=6)
+grid.draw(timeseries.grouped)
 dev.off()

@@ -1763,3 +1763,34 @@ timeseries.grouped
 pdf("plots/timeseries_grouped.pdf", height=8, width=6)
 grid.draw(timeseries.grouped)
 dev.off()
+
+#####################
+#let's check for differential patterns in the timeseries by plant community treatment
+
+#natives
+all_gam_plants<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                    data=nativetot, family="quasipoisson")
+summary(all_gam_plants)
+
+visreg(all_gam_plants, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
+  facet_wrap(~TREAT_DESC, ncol = 3)
+
+#invasives
+all_gam_plants<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                    data=invasivetot, family="quasipoisson")
+summary(all_gam_plants)
+
+visreg(all_gam_plants, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
+  facet_wrap(~TREAT_DESC, ncol = 3)
+
+#all species
+
+all_gam_plants<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+              data=all_tot, family="quasipoisson")
+summary(all_gam_plants)
+
+visreg(all_gam_plants, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
+  facet_wrap(~TREAT_DESC, ncol = 3)

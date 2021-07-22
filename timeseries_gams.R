@@ -1219,13 +1219,13 @@ native<-rbind(HPARN_summary,HGLAC_summary,HCONV_summary,H13_summary,CYCSP_summar
               CTRIF_summary,CSTIG_summary, CMAC_summary,BURSI_summary,ABIPN_summary)
 all_lb<-rbind(invasive, native)
 
-invasivetot <- ddply(invasive, .(year, TREAT_DESC, REPLICATE), summarise,
+invasivetot <- ddply(invasive, .(year, TREAT_DESC, TREAT_CAT, REPLICATE), summarise,
                    ADULTS = sum(ADULTS),
                    TRAPS=max(TRAPS))
-nativetot <- ddply(native, .(year, TREAT_DESC, REPLICATE), summarise,
+nativetot <- ddply(native, .(year, TREAT_DESC, TREAT_CAT,  REPLICATE), summarise,
                       ADULTS = sum(ADULTS),
                       TRAPS=max(TRAPS))
-all_tot <- ddply(all_lb, .(year, TREAT_DESC, REPLICATE), summarise,
+all_tot <- ddply(all_lb, .(year, TREAT_DESC, TREAT_CAT,  REPLICATE), summarise,
                  ADULTS = sum(ADULTS),
                  TRAPS=max(TRAPS))
 
@@ -1278,6 +1278,23 @@ ABIPN.year<-ggplot(data=ABIPN.pred, aes(year, fit))+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.13, NA))
 ABIPN.year
 
+#######
+#by plant community or (or community group)
+ABIPN.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                data=ABIPN_summary, family="quasipoisson")
+summary(ABIPN.gam1)
+
+visreg(ABIPN.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+ABIPN.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                data=ABIPN_summary, family="quasipoisson")
+summary(ABIPN.gam2)
+
+visreg(ABIPN.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
 
 ##########################################
 # make BURSI figure
@@ -1307,7 +1324,23 @@ BURSI.year<-ggplot(data=BURSI.pred, aes(year, fit))+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 BURSI.year
 
+#######
+#by plant community or (or community group)
+BURSI.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                data=BURSI_summary, family="quasipoisson")
+summary(BURSI.gam1)
 
+visreg(BURSI.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+BURSI.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                data=BURSI_summary, family="quasipoisson")
+summary(BURSI.gam2)
+
+visreg(BURSI.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
 
 
 ##########################################
@@ -1338,7 +1371,23 @@ C7.year<-ggplot(data=C7.pred, aes(year, fit))+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 C7.year
 
+#######
+#by plant community or (or community group)
+C7.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                data=C7_summary, family="quasipoisson")
+summary(C7.gam1)
 
+visreg(C7.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+C7.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                data=C7_summary, family="quasipoisson")
+summary(C7.gam2)
+
+visreg(C7.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
 
 ##########################################
 # make CMAC figure
@@ -1368,6 +1417,24 @@ CMAC.year<-ggplot(data=CMAC.pred, aes(year, fit))+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CMAC.year
 
+#######
+#by plant community or (or community group)
+CMAC.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+             data=CMAC_summary, family="quasipoisson")
+summary(CMAC.gam1)
+
+visreg(CMAC.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+CMAC.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+             data=C7_summary, family="quasipoisson")
+summary(CMAC.gam2)
+
+visreg(CMAC.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
+
 ##########################################
 # make CSTIG figure
 
@@ -1395,6 +1462,24 @@ CSTIG.year<-ggplot(data=CSTIG.pred, aes(year, fit))+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CSTIG.year
+
+#######
+#by plant community or (or community group)
+CSTIG.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+               data=CSTIG_summary, family="quasipoisson")
+summary(CSTIG.gam1)
+
+visreg(CSTIG.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+CSTIG.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+               data=CSTIG_summary, family="quasipoisson")
+summary(CSTIG.gam2)
+
+visreg(CSTIG.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
 
 ##########################################
 # make CTRIF figure
@@ -1424,7 +1509,23 @@ CTRIF.year<-ggplot(data=CTRIF.pred, aes(year, fit))+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CTRIF.year
 
+#######
+#by plant community or (or community group)
+CTRIF.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                data=CTRIF_summary, family="quasipoisson")
+summary(CTRIF.gam1)
 
+visreg(CTRIF.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+CTRIF.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                data=CTRIF_summary, family="quasipoisson")
+summary(CTRIF.gam2)
+
+visreg(CTRIF.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
 
 ##########################################
 # make CYCSP figure
@@ -1454,6 +1555,26 @@ CYCSP.year<-ggplot(data=CYCSP.pred, aes(year, fit))+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CYCSP.year
 
+#######
+#by plant community or (or community group)
+CYCSP.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                data=CYCSP_summary, family="quasipoisson")
+summary(CYCSP.gam1)
+
+visreg(CYCSP.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+CYCSP.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                data=CYCSP_summary, family="quasipoisson")
+summary(CYCSP.gam2)
+
+visreg(CYCSP.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
+
+
+
 ##########################################
 # make H13 figure
 
@@ -1481,6 +1602,25 @@ H13.year<-ggplot(data=H13.pred, aes(year, fit))+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 H13.year
+
+#######
+#by plant community or (or community group)
+H13.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                data=H13_summary, family="quasipoisson")
+summary(H13.gam1)
+
+visreg(H13.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+H13.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                data=H13_summary, family="quasipoisson")
+summary(H13.gam2)
+
+visreg(H13.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
+
 
 
 ##########################################
@@ -1511,6 +1651,24 @@ HAXY.year<-ggplot(data=HAXY.pred, aes(year, fit))+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HAXY.year
 
+#######
+#by plant community or (or community group)
+HAXY.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+              data=HAXY_summary, family="quasipoisson")
+summary(HAXY.gam1)
+
+visreg(HAXY.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+HAXY.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+              data=HAXY_summary, family="quasipoisson")
+summary(HAXY.gam2)
+
+visreg(HAXY.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
+
 
 ##########################################
 # make HCONV figure
@@ -1540,7 +1698,23 @@ HCONV.year<-ggplot(data=HCONV.pred, aes(year, fit))+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HCONV.year
 
+#######
+#by plant community or (or community group)
+HCONV.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+               data=HCONV_summary, family="quasipoisson")
+summary(HCONV.gam1)
 
+visreg(HCONV.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+HCONV.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+               data=HCONV_summary, family="quasipoisson")
+summary(HCONV.gam2)
+
+visreg(HCONV.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
 ##########################################
 # make HGLAC figure
 
@@ -1568,6 +1742,25 @@ HGLAC.year<-ggplot(data=HGLAC.pred, aes(year, fit))+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HGLAC.year
+
+#######
+#by plant community or (or community group)
+HGLAC.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                data=HGLAC_summary, family="quasipoisson")
+summary(HGLAC.gam1)
+
+visreg(HGLAC.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+HGLAC.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                data=HGLAC_summary, family="quasipoisson")
+summary(HGLAC.gam2)
+
+visreg(HGLAC.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
+
 ##########################################
 # make HPARN figure
 
@@ -1595,6 +1788,24 @@ HPARN.year<-ggplot(data=HPARN.pred, aes(year, fit))+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HPARN.year
+
+#######
+#by plant community or (or community group)
+HPARN.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                data=HPARN_summary, family="quasipoisson")
+summary(HPARN.gam1)
+
+visreg(HPARN.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+HPARN.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                data=HPARN_summary, family="quasipoisson")
+summary(HPARN.gam2)
+
+visreg(HPARN.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
 ##########################################
 # make HVAR figure
 
@@ -1622,6 +1833,24 @@ HVAR.year<-ggplot(data=HVAR.pred, aes(year, fit))+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HVAR.year
+
+#######
+#by plant community or (or community group)
+HVAR.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                data=HVAR_summary, family="quasipoisson")
+summary(HVAR.gam1)
+
+visreg(HVAR.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+HVAR.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                data=HVAR_summary, family="quasipoisson")
+summary(HVAR.gam2)
+
+visreg(HVAR.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
 
 ##########################################
 # make PQUA figure
@@ -1651,7 +1880,23 @@ PQUA.year<-ggplot(data=PQUA.pred, aes(year, fit))+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 PQUA.year
 
+#######
+#by plant community or (or community group)
+PQUA.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+               data=PQUA_summary, family="quasipoisson")
+summary(PQUA.gam1)
 
+visreg(PQUA.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+PQUA.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+               data=PQUA_summary, family="quasipoisson")
+summary(PQUA.gam2)
+
+visreg(PQUA.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
 
 ##########################################
 # make all native figure

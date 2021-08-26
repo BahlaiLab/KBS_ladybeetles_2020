@@ -37,6 +37,8 @@ str(PQUA)
 ###########
 #subset the data to include only data before August 10th or the 222 DOY
 PQUA= subset(PQUA, DOY > 0 & DOY < 222)
+#subset the data to include  1993 or later, because sampling changed to add forests then
+PQUA= subset(PQUA, year >= 1993)
 
 # data is currently structured as subsamples, replicates, across treatments. We know from 
 # http://biorxiv.org/content/early/2016/09/11/074633 that the organisms were most abundant in
@@ -128,6 +130,8 @@ str(HVAR)
 ###########
 #subset the data to include only data before August 10th or the 222 DOY
 HVAR= subset(HVAR, DOY > 0 & DOY < 222)
+#subset the data to include  1993 or later, because sampling changed to add forests then
+HVAR= subset(HVAR, year >= 1993)
 
 library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
@@ -215,6 +219,8 @@ str(HPARN)
 ###########
 #subset the data to include only data before August 10th or the 222 DOY
 HPARN= subset(HPARN, DOY > 0 & DOY < 222)
+#subset the data to include  1993 or later, because sampling changed to add forests then
+HPARN= subset(HPARN, year >= 1993)
 
 library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
@@ -303,6 +309,8 @@ str(HGLAC)
 ###########
 #subset the data to include only data before August 10th or the 222 DOY
 HGLAC= subset(HGLAC, DOY > 0 & DOY < 222)
+#subset the data to include  1993 or later, because sampling changed to add forests then
+HGLAC= subset(HGLAC, year >= 1993)
 
 library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
@@ -391,6 +399,8 @@ str(HCONV)
 ###########
 #subset the data to include only data before August 10th or the 222 DOY
 HCONV= subset(HCONV, DOY > 0 & DOY < 222)
+#subset the data to include  1993 or later, because sampling changed to add forests then
+HCONV= subset(HCONV, year >= 1993)
 
 library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
@@ -479,6 +489,8 @@ str(HAXY)
 ###########
 #subset the data to include only data before August 10th or the 222 DOY
 HAXY= subset(HAXY, DOY > 0 & DOY < 222)
+#subset the data to include  1993 or later, because sampling changed to add forests then
+HAXY= subset(HAXY, year >= 1993)
 
 library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
@@ -565,6 +577,8 @@ str(H13)
 ###########
 #subset the data to include only data before August 10th or the 222 DOY
 H13= subset(H13, DOY > 0 & DOY < 222)
+#subset the data to include  1993 or later, because sampling changed to add forests then
+H13= subset(H13, year >= 1993)
 
 library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
@@ -650,6 +664,8 @@ str(CYCSP)
 ###########
 #subset the data to include only data before August 10th or the 222 DOY
 CYCSP= subset(CYCSP, DOY > 0 & DOY < 222)
+#subset the data to include  1993 or later, because sampling changed to add forests then
+CYCSP= subset(CYCSP, year >= 1993)
 
 library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
@@ -737,6 +753,8 @@ str(CTRIF)
 ###########
 #subset the data to include only data before August 10th or the 222 DOY
 CTRIF= subset(CTRIF, DOY > 0 & DOY < 222)
+#subset the data to include  1993 or later, because sampling changed to add forests then
+CTRIF= subset(CTRIF, year >= 1993)
 
 library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
@@ -825,6 +843,8 @@ str(CSTIG)
 ###########
 #subset the data to include only data before August 10th or the 222 DOY
 CSTIG= subset(CSTIG, DOY > 0 & DOY < 222)
+#subset the data to include  1993 or later, because sampling changed to add forests then
+CSTIG= subset(CSTIG, year >= 1993)
 
 library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
@@ -904,6 +924,8 @@ str(CMAC)
 ###########
 #subset the data to include only data before August 10th or the 222 DOY
 CMAC= subset(CMAC, DOY > 0 & DOY < 222)
+#subset the data to include  1993 or later, because sampling changed to add forests then
+CMAC= subset(CMAC, year >= 1993)
 
 library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
@@ -994,6 +1016,8 @@ str(C7)
 ###########
 #subset the data to include only data before August 10th or the 222 DOY
 C7= subset(C7, DOY > 0 & DOY < 222)
+#subset the data to include  1993 or later, because sampling changed to add forests then
+C7= subset(C7, year >= 1993)
 
 library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
@@ -1079,6 +1103,8 @@ str(BURSI)
 ###########
 #subset the data to include only data before August 10th or the 222 DOY
 BURSI= subset(BURSI, DOY > 0 & DOY < 222)
+#subset the data to include  1993 or later, because sampling changed to add forests then
+BURSI= subset(BURSI, year >= 1993)
 
 library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
@@ -1165,6 +1191,8 @@ str(ABIPN)
 ###########
 #subset the data to include only data before August 10th or the 222 DOY
 ABIPN= subset(ABIPN, DOY > 0 & DOY < 222)
+#subset the data to include  1993 or later, because sampling changed to add forests then
+BURSI= subset(BURSI, year >= 1993)
 
 library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
@@ -2021,6 +2049,14 @@ visreg(all_gam_plants, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
+all_gam_plants1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                     data=nativetot, family="quasipoisson")
+summary(all_gam_plants1)
+
+visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
+  facet_wrap(~TREAT_DCAT, ncol = 4)
+
 #invasives
 all_gam_plants<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
                     data=invasivetot, family="quasipoisson")
@@ -2029,6 +2065,15 @@ summary(all_gam_plants)
 visreg(all_gam_plants, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_DESC, ncol = 4)
+
+all_gam_plants1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                     data=invasivetot, family="quasipoisson")
+summary(all_gam_plants1)
+
+visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
+  facet_wrap(~TREAT_CAT, ncol = 4)
+
 
 #all species
 
@@ -2039,3 +2084,11 @@ summary(all_gam_plants)
 visreg(all_gam_plants, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_DESC, ncol = 4)
+
+all_gam_plants1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                    data=all_tot, family="quasipoisson")
+summary(all_gam_plants1)
+
+visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
+  facet_wrap(~TREAT_CAT, ncol = 4)

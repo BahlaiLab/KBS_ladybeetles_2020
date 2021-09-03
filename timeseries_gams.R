@@ -2082,7 +2082,7 @@ visreg(all_gam_plants, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
-all_gam_plants1<-gam(ADULTS~s(year, sp=1, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+all_gam_plants1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
                      data=nativetot, family="quasipoisson")
 summary(all_gam_plants1)
 
@@ -2104,7 +2104,7 @@ visreg(all_gam_plants, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
-all_gam_plants1<-gam(ADULTS~s(year, sp=1, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+all_gam_plants1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
                      data=invasivetot, family="quasipoisson")
 summary(all_gam_plants1)
 
@@ -2112,7 +2112,7 @@ invasiveplot<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captur
                      gg=TRUE, jitter=F, line=list(col="black"), partial=FALSE, rug=FALSE, 
                      fill=list(fill="salmon1", col="salmon1"),
                      points=NULL)+
-  scale_y_continuous(trans='pseudo_log')+
+  scale_y_continuous()+
   facet_wrap(~TREAT_CAT, ncol = 4)+theme_bw()
 invasiveplot
 

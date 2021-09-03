@@ -1268,7 +1268,7 @@ library(mgcv)
 library(visreg)
 library(ggplot2)
 library(tidymv)
-
+library(grid)
 
 
 
@@ -2068,6 +2068,11 @@ dev.off()
 #####################
 #let's check for differential patterns in the timeseries by plant community treatment
 
+#first let's make TREAT_CAT a factor for all the data so we can reorder the plots
+nativetot$TREAT_CAT = factor(nativetot$TREAT_CAT, levels=c('Annual', 'Perennial', 'Forest'))
+invasivetot$TREAT_CAT = factor(invasivetot$TREAT_CAT, levels=c('Annual', 'Perennial', 'Forest'))
+all_tot$TREAT_CAT = factor(all_tot$TREAT_CAT, levels=c('Annual', 'Perennial', 'Forest'))
+
 #natives
 all_gam_plants<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
                     data=nativetot, family="quasipoisson")
@@ -2077,13 +2082,18 @@ visreg(all_gam_plants, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
-all_gam_plants1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+all_gam_plants1<-gam(ADULTS~s(year, sp=1, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
                      data=nativetot, family="quasipoisson")
 summary(all_gam_plants1)
 
-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
-  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
-  facet_wrap(~TREAT_CAT, ncol = 4)
+nativeplot<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures",
+                   gg=TRUE, jitter=F, line=list(col="black"), partial=FALSE, rug=FALSE, 
+                   fill=list(fill="paleturquoise", col="paleturquoise"),
+                   points=list(cex=1, pch=1))+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)+theme_bw()
+
+nativeplot
 
 #invasives
 all_gam_plants<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
@@ -2094,14 +2104,17 @@ visreg(all_gam_plants, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
-all_gam_plants1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+all_gam_plants1<-gam(ADULTS~s(year, sp=1, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
                      data=invasivetot, family="quasipoisson")
 summary(all_gam_plants1)
 
-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
-  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
-  facet_wrap(~TREAT_CAT, ncol = 4)
-
+invasiveplot<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures",
+                     gg=TRUE, jitter=F, line=list(col="black"), partial=FALSE, rug=FALSE, 
+                     fill=list(fill="salmon1", col="salmon1"),
+                     points=NULL)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)+theme_bw()
+invasiveplot
 
 #all species
 
@@ -2120,3 +2133,13 @@ summary(all_gam_plants1)
 visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_CAT, ncol = 4)
+
+#create the by plant community figures
+
+by.community<-plot_grid(nativeplot, invasiveplot,
+                              ncol=1, rel_widths=c(1), labels=c('A', 'B'), align="v")
+by.community
+
+pdf("plots/timeseries_by_community.pdf", height=6, width=8)
+grid.draw(by.community)
+dev.off()

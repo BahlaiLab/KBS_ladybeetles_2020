@@ -2090,7 +2090,7 @@ nativeplot<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures
                    gg=TRUE, jitter=F, line=list(col="black"), partial=FALSE, rug=FALSE, 
                    fill=list(fill="paleturquoise", col="paleturquoise"),
                    points=list(cex=1, pch=1))+
-  scale_y_continuous(trans='pseudo_log')+
+  scale_y_continuous()+
   facet_wrap(~TREAT_CAT, ncol = 4)+theme_bw()
 
 nativeplot

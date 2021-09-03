@@ -1192,7 +1192,7 @@ str(ABIPN)
 #subset the data to include only data before August 10th or the 222 DOY
 ABIPN= subset(ABIPN, DOY > 0 & DOY < 222)
 #subset the data to include  1993 or later, because sampling changed to add forests then
-BURSI= subset(BURSI, year >= 1993)
+ABIPN= subset(ABIPN, year >= 1993)
 
 library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
@@ -1284,7 +1284,7 @@ smooth.param<-0.5
 newd <- with(ABIPN_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(ABIPN_summary$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(ABIPN_summary$year))/6) #only allow max of 1 knot every ~6 years
 
 ABIPN.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                 data=ABIPN_summary, family="quasipoisson")
@@ -1301,7 +1301,7 @@ ABIPN.year<-ggplot(data=ABIPN.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.13, NA))
 ABIPN.year
@@ -1324,6 +1324,14 @@ visreg(ABIPN.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+#last 10 year trend
+ABIPN10<-subset(ABIPN_summary, year >= 2011)
+
+abi10mod<-lm(ADULTS~year, data=ABIPN10)
+
+summary(abi10mod)
+
+
 ##########################################
 # make BURSI figure
 
@@ -1331,7 +1339,7 @@ visreg(ABIPN.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 newd <- with(BURSI_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(BURSI_summary$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(BURSI_summary$year))/6) #only allow max of 1 knot every ~6 years
 BURSI.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                 data=BURSI_summary, family="quasipoisson")
 summary(BURSI.gam0)
@@ -1347,7 +1355,7 @@ BURSI.year<-ggplot(data=BURSI.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 BURSI.year
@@ -1370,6 +1378,12 @@ visreg(BURSI.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+#last 10 year trend
+BURSI10<-subset(BURSI_summary, year >= 2011)
+
+bursi10mod<-lm(ADULTS~year, data=BURSI10)
+
+summary(bursi10mod)
 
 ##########################################
 # make C7 figure
@@ -1378,7 +1392,7 @@ visreg(BURSI.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 newd <- with(C7_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(C7_summary$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(C7_summary$year))/6) #only allow max of 1 knot every ~6 years
 C7.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
              data=C7_summary, family="quasipoisson")
 summary(C7.gam0)
@@ -1394,7 +1408,7 @@ C7.year<-ggplot(data=C7.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 C7.year
@@ -1417,6 +1431,13 @@ visreg(C7.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+#last 10 year trend
+C710<-subset(C7_summary, year >= 2011)
+
+c710mod<-lm(ADULTS~year, data=C710)
+
+summary(c710mod)
+
 ##########################################
 # make CMAC figure
 
@@ -1424,7 +1445,7 @@ visreg(C7.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 newd <- with(CMAC_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(CMAC_summary$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(CMAC_summary$year))/6) #only allow max of 1 knot every ~6 years
 CMAC.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                data=CMAC_summary, family="quasipoisson")
 summary(CMAC.gam0)
@@ -1440,7 +1461,7 @@ CMAC.year<-ggplot(data=CMAC.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CMAC.year
@@ -1463,6 +1484,13 @@ visreg(CMAC.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+#last 10 year trend
+CMAC10<-subset(CMAC_summary, year >= 2011)
+
+cmac10mod<-lm(ADULTS~year, data=CMAC10)
+
+summary(CMAC10mod)
+
 ##########################################
 # make CSTIG figure
 
@@ -1470,7 +1498,7 @@ visreg(CMAC.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 newd <- with(CSTIG_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(CSTIG_summary$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(CSTIG_summary$year))/6) #only allow max of 1 knot every ~6 years
 CSTIG.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                 data=CSTIG_summary, family="quasipoisson")
 summary(CSTIG.gam0)
@@ -1486,7 +1514,7 @@ CSTIG.year<-ggplot(data=CSTIG.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CSTIG.year
@@ -1516,7 +1544,7 @@ visreg(CSTIG.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 newd <- with(CTRIF_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(CTRIF_summary$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(CTRIF_summary$year))/6) #only allow max of 1 knot every ~6 years
 CTRIF.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                 data=CTRIF_summary, family="quasipoisson")
 summary(CTRIF.gam0)
@@ -1532,7 +1560,7 @@ CTRIF.year<-ggplot(data=CTRIF.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CTRIF.year
@@ -1562,7 +1590,7 @@ visreg(CTRIF.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 newd <- with(CYCSP_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(CYCSP_summary$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(CYCSP_summary$year))/6) #only allow max of 1 knot every ~6 years
 CYCSP.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                 data=CYCSP_summary, family="quasipoisson")
 summary(CYCSP.gam0)
@@ -1578,7 +1606,7 @@ CYCSP.year<-ggplot(data=CYCSP.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CYCSP.year
@@ -1610,7 +1638,7 @@ visreg(CYCSP.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 newd <- with(H13_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(H13_summary$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(H13_summary$year))/6) #only allow max of 1 knot every ~6 years
 H13.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
               data=H13_summary, family="quasipoisson")
 summary(H13.gam0)
@@ -1626,7 +1654,7 @@ H13.year<-ggplot(data=H13.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 H13.year
@@ -1658,7 +1686,7 @@ visreg(H13.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 newd <- with(HAXY_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(HAXY_summary$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(HAXY_summary$year))/6) #only allow max of 1 knot every ~6 years
 HAXY.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                data=HAXY_summary, family="quasipoisson")
 summary(HAXY.gam0)
@@ -1674,7 +1702,7 @@ HAXY.year<-ggplot(data=HAXY.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HAXY.year
@@ -1705,7 +1733,7 @@ visreg(HAXY.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 newd <- with(HCONV_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(HCONV_summary$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(HCONV_summary$year))/6) #only allow max of 1 knot every ~6 years
 HCONV.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                 data=HCONV_summary, family="quasipoisson")
 summary(HCONV.gam0)
@@ -1721,7 +1749,7 @@ HCONV.year<-ggplot(data=HCONV.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HCONV.year
@@ -1750,7 +1778,7 @@ visreg(HCONV.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 newd <- with(HGLAC_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(HGLAC_summary$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(HGLAC_summary$year))/6) #only allow max of 1 knot every ~6 years
 HGLAC.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                 data=HGLAC_summary, family="quasipoisson")
 summary(HGLAC.gam0)
@@ -1766,7 +1794,7 @@ HGLAC.year<-ggplot(data=HGLAC.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HGLAC.year
@@ -1796,7 +1824,7 @@ visreg(HGLAC.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 newd <- with(HPARN_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(HPARN_summary$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(HPARN_summary$year))/6) #only allow max of 1 knot every ~6 years
 HPARN.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                 data=HPARN_summary, family="quasipoisson")
 summary(HPARN.gam0)
@@ -1812,7 +1840,7 @@ HPARN.year<-ggplot(data=HPARN.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HPARN.year
@@ -1841,7 +1869,7 @@ visreg(HPARN.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 newd <- with(HVAR_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(HVAR_summary$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(HVAR_summary$year))/6) #only allow max of 1 knot every ~6 years
 HVAR.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                data=HVAR_summary, family="quasipoisson")
 summary(HVAR.gam0)
@@ -1857,7 +1885,7 @@ HVAR.year<-ggplot(data=HVAR.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HVAR.year
@@ -1887,7 +1915,7 @@ visreg(HVAR.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 newd <- with(PQUA_summary,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(PQUA_summary$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(PQUA_summary$year))/6) #only allow max of 1 knot every ~6 years
 PQUA.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                data=PQUA_summary, family="quasipoisson")
 summary(PQUA.gam0)
@@ -1903,7 +1931,7 @@ PQUA.year<-ggplot(data=PQUA.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
     theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 PQUA.year
@@ -1933,7 +1961,7 @@ visreg(PQUA.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 newd <- with(nativetot,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(nativetot$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(nativetot$year))/6) #only allow max of 1 knot every ~6 years
 native.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                  data=nativetot, family="quasipoisson")
 summary(native.gam0)
@@ -1950,7 +1978,7 @@ native.year<-ggplot(data=native.pred, aes(year, fit))+
   geom_line()+
   
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 native.year
@@ -1964,7 +1992,7 @@ native.year
 newd <- with(invasivetot,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(invasivetot$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(invasivetot$year))/6) #only allow max of 1 knot every ~6 years
 invasive.gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
                    data=invasivetot, family="quasipoisson")
 summary(invasive.gam0)
@@ -1980,7 +2008,7 @@ invasive.year<-ggplot(data=invasive.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 invasive.year
@@ -1993,7 +2021,7 @@ invasive.year
 newd <- with(all_tot,
              data.frame(year = seq(min(year), max(year), length = 1000),
                         TRAPS = 50))
-knots<-round(length(unique(all_tot$year))/5) #only allow max of 1 knot every ~5 years
+knots<-round(length(unique(all_tot$year))/6) #only allow max of 1 knot every ~6 years
 all_gam0<-gam(ADULTS~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
               data=all_tot, family="quasipoisson")
 summary(all_gam0)
@@ -2009,7 +2037,7 @@ all_year<-ggplot(data=all_pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='grey', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1989, 2020)+
+  xlim(1993, 2020)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, NA))
 all_year
@@ -2055,7 +2083,7 @@ summary(all_gam_plants1)
 
 visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
-  facet_wrap(~TREAT_DCAT, ncol = 4)
+  facet_wrap(~TREAT_CAT, ncol = 4)
 
 #invasives
 all_gam_plants<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),

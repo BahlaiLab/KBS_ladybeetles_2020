@@ -1331,7 +1331,6 @@ abi10mod<-lm(ADULTS~year, data=ABIPN10)
 
 summary(abi10mod)
 
-
 ##########################################
 # make BURSI figure
 
@@ -1487,7 +1486,7 @@ visreg(CMAC.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 #last 10 year trend
 CMAC10<-subset(CMAC_summary, year >= 2011)
 
-cmac10mod<-lm(ADULTS~year, data=CMAC10)
+CMAC10mod<-lm(ADULTS~year, data=CMAC10)
 
 summary(CMAC10mod)
 
@@ -1537,6 +1536,13 @@ visreg(CSTIG.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+#last 10 year trend
+CSTIG10<-subset(CSTIG_summary, year >= 2011)
+
+CSTIG10mod<-lm(ADULTS~year, data=CSTIG10)
+
+summary(CSTIG10mod)
+
 ##########################################
 # make CTRIF figure
 
@@ -1582,6 +1588,14 @@ summary(CTRIF.gam2)
 visreg(CTRIF.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
+
+#last 10 year trend
+CTRIF10<-subset(CTRIF_summary, year >= 2011)
+
+CTRIF10mod<-lm(ADULTS~year, data=CTRIF10)
+
+summary(CTRIF10mod)
+
 
 ##########################################
 # make CYCSP figure
@@ -1630,6 +1644,13 @@ visreg(CYCSP.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
 
+#last 10 year trend
+CYCSP10<-subset(CYCSP_summary, year >= 2011)
+
+CYCSP10mod<-lm(ADULTS~year, data=CYCSP10)
+
+summary(CYCSP10mod)
+
 
 ##########################################
 # make H13 figure
@@ -1677,7 +1698,12 @@ visreg(H13.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+#last 10 year trend
+H1310<-subset(H13_summary, year >= 2011)
 
+H1310mod<-lm(ADULTS~year, data=H1310)
+
+summary(H1310mod)
 
 ##########################################
 # make HAXY figure
@@ -1707,6 +1733,7 @@ HAXY.year<-ggplot(data=HAXY.pred, aes(year, fit))+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HAXY.year
 
+
 #######
 #by plant community or (or community group)
 HAXY.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
@@ -1724,6 +1751,14 @@ summary(HAXY.gam2)
 visreg(HAXY.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
+
+#last 10 year trend
+HAXY10<-subset(HAXY_summary, year >= 2011)
+
+HAXY10mod<-lm(ADULTS~year, data=HAXY10)
+
+summary(HAXY10mod)
+
 
 
 ##########################################
@@ -1771,6 +1806,15 @@ summary(HCONV.gam2)
 visreg(HCONV.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
+#last 10 year trend
+
+HCONV10<-subset(HCONV_summary, year >= 2011)
+
+HCONV10mod<-lm(ADULTS~year, data=HCONV10)
+
+summary(HCONV10mod)
+
+
 ##########################################
 # make HGLAC figure
 
@@ -1817,6 +1861,14 @@ visreg(HGLAC.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+#last 10 year trend
+
+HGLAC10<-subset(HGLAC_summary, year >= 2011)
+
+HGLAC10mod<-lm(ADULTS~year, data=HGLAC10)
+
+summary(HGLAC10mod)
+
 ##########################################
 # make HPARN figure
 
@@ -1862,6 +1914,16 @@ summary(HPARN.gam2)
 visreg(HPARN.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
+
+#last 10 year trend
+
+HPARN10<-subset(HPARN_summary, year >= 2011)
+
+HPARN10mod<-lm(ADULTS~year, data=HPARN10)
+
+summary(HPARN10mod)
+
+
 ##########################################
 # make HVAR figure
 
@@ -1908,6 +1970,14 @@ visreg(HVAR.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+#last 10 year trend
+
+HVAR10<-subset(HVAR_summary, year >= 2011)
+
+HVAR10mod<-lm(ADULTS~year, data=HVAR10)
+
+summary(HVAR10mod)
+
 ##########################################
 # make PQUA figure
 
@@ -1953,6 +2023,14 @@ summary(PQUA.gam2)
 visreg(PQUA.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
+
+#last 10 year trend
+
+PQUA10<-subset(PQUA_summary, year >= 2011)
+
+PQUA10mod<-lm(ADULTS~year, data=PQUA10)
+
+summary(PQUA10mod)
 
 ##########################################
 # make all native figure

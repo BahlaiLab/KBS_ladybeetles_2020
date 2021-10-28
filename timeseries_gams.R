@@ -1242,6 +1242,24 @@ ABIPN_agg <- ddply(ABIPN_summary, .(TREAT_CAT, year), summarise,
 ######################################
 #get all this data into a single dataframe
 
+#create weighted by predation potential variable- use values based on Bahlai et al 2013
+HAXY_summary$pred<-0.672*HAXY_summary$ADULTS
+C7_summary$pred<-0.628*C7_summary$ADULTS
+HVAR_summary$pred<-0.237*HVAR_summary$ADULTS
+PQUA_summary$pred<-0.200*PQUA_summary$ADULTS
+HPARN_summary$pred<-0.320*HPARN_summary$ADULTS
+HGLAC_summary$pred<-0.440*HGLAC_summary$ADULTS
+HCONV_summary$pred<-0.440*HCONV_summary$ADULTS
+H13_summary$pred<-0.189*H13_summary$ADULTS
+CYCSP_summary$pred<-0.384*CYCSP_summary$ADULTS
+CTRIF_summary$pred<-0.320*CTRIF_summary$ADULTS
+CSTIG_summary$pred<-0*CSTIG_summary$ADULTS
+CMAC_summary$pred<-0.350*CMAC_summary$ADULTS
+BURSI_summary$pred<-0.2*BURSI_summary$ADULTS #based on body size, no literature value found
+ABIPN_summary$pred<-0.172*ABIPN_summary$ADULTS
+
+
+
 invasive<-rbind(HAXY_summary, C7_summary,HVAR_summary, PQUA_summary)
 native<-rbind(HPARN_summary,HGLAC_summary,HCONV_summary,H13_summary,CYCSP_summary,
               CTRIF_summary,CSTIG_summary, CMAC_summary,BURSI_summary,ABIPN_summary)
@@ -1256,6 +1274,11 @@ nativetot <- ddply(native, .(year, TREAT_DESC, TREAT_CAT,  REPLICATE), summarise
 all_tot <- ddply(all_lb, .(year, TREAT_DESC, TREAT_CAT,  REPLICATE), summarise,
                  ADULTS = sum(ADULTS),
                  TRAPS=max(TRAPS))
+
+pred_tot <- ddply(all_lb, .(year, TREAT_DESC, TREAT_CAT,  REPLICATE), summarise,
+                 pred = sum(pred),
+                 TRAPS=max(TRAPS))
+
 
 
 ######################################################################################
@@ -2150,6 +2173,7 @@ dev.off()
 nativetot$TREAT_CAT = factor(nativetot$TREAT_CAT, levels=c('Annual', 'Perennial', 'Forest'))
 invasivetot$TREAT_CAT = factor(invasivetot$TREAT_CAT, levels=c('Annual', 'Perennial', 'Forest'))
 all_tot$TREAT_CAT = factor(all_tot$TREAT_CAT, levels=c('Annual', 'Perennial', 'Forest'))
+pred_tot$TREAT_CAT = factor(all_tot$TREAT_CAT, levels=c('Annual', 'Perennial', 'Forest'))
 
 #natives
 all_gam_plants<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
@@ -2212,12 +2236,50 @@ visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+
+#predation potential
+
+pred_gam_plants<-gam(pred~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                    data=pred_tot, family="quasipoisson")
+summary(pred_gam_plants)
+
+visreg(pred_gam_plants, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+pred_gam_plants1<-gam(pred~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                     data=pred_tot, family="quasipoisson")
+summary(pred_gam_plants1)
+
+visreg(pred_gam_plants1, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
+  facet_wrap(~TREAT_CAT, ncol = 4)
+
+predplot<-visreg(pred_gam_plants1, "year", "TREAT_CAT", ylab="residual captures",
+                     gg=TRUE, jitter=F, line=list(col="black"), partial=FALSE, rug=FALSE, 
+                     fill=list(fill="blue", col="blue"),
+                     points=NULL)+
+  scale_y_continuous()+
+  facet_wrap(~TREAT_CAT, ncol = 4)+theme_bw()
+predplot
+
+
 #create the by plant community figures
 
-by.community<-plot_grid(nativeplot, invasiveplot,
-                              ncol=1, rel_widths=c(1), labels=c('A', 'B'), align="v")
+by.community<-plot_grid(nativeplot, invasiveplot, predplot,
+                              ncol=1, rel_widths=c(1), labels=c('A', 'B', 'C'), align="v")
 by.community
 
 pdf("plots/timeseries_by_community.pdf", height=6, width=8)
 grid.draw(by.community)
 dev.off()
+
+
+predplot1<-visreg(pred_gam_plants1, "year", by="TREAT_CAT", ylab="predation potential",
+                 gg=TRUE, overlay=T, jitter=F, partial=FALSE, rug=F,
+                 points=NULL)+
+  scale_y_continuous()+theme_bw()+labs(color='Community type', fill='Community type')+
+  scale_color_manual(values=c("black", "blue", "green"))+
+  scale_fill_manual(values=alpha(c("black", "blue", "green"),0.2))
+predplot1
+

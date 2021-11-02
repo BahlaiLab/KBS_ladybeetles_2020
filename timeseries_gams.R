@@ -2197,6 +2197,12 @@ nativeplot<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures
 
 nativeplot
 
+nativeplot1<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures",
+                    gg=TRUE, overlay=T, jitter=F, partial=FALSE, rug=FALSE, 
+                    points=list(cex=1, pch=1))+
+  scale_y_continuous()+theme_bw()+labs(color='Community type', fill='Community type')
+nativeplot1
+
 #invasives
 all_gam_plants<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
                     data=invasivetot, family="quasipoisson")
@@ -2218,6 +2224,12 @@ invasiveplot<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captur
   facet_wrap(~TREAT_CAT, ncol = 4)+theme_bw()
 invasiveplot
 
+invasiveplot1<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures",
+                    gg=TRUE, overlay=T, jitter=F, partial=FALSE, rug=FALSE, 
+                    points=list(cex=1, pch=1))+
+  scale_y_continuous()+theme_bw()+labs(color='Community type', fill='Community type')
+invasiveplot1
+
 #all species
 
 all_gam_plants<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
@@ -2236,6 +2248,12 @@ visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+
+allplot1<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures",
+                    gg=TRUE, overlay=T, jitter=F, partial=FALSE, rug=FALSE, 
+                    points=list(cex=1, pch=1))+
+  scale_y_continuous()+theme_bw()+labs(color='Community type', fill='Community type')
+allplot1
 
 #predation potential
 
@@ -2278,8 +2296,23 @@ dev.off()
 predplot1<-visreg(pred_gam_plants1, "year", by="TREAT_CAT", ylab="predation potential",
                  gg=TRUE, overlay=T, jitter=F, partial=FALSE, rug=F,
                  points=NULL)+
-  scale_y_continuous()+theme_bw()+labs(color='Community type', fill='Community type')+
-  scale_color_manual(values=c("black", "blue", "green"))+
-  scale_fill_manual(values=alpha(c("black", "blue", "green"),0.2))
+  scale_y_continuous()+theme_bw()+labs(color='Community type', fill='Community type')#+
+  #scale_color_manual(values=c("black", "blue", "green"))+
+  #scale_fill_manual(values=alpha(c("black", "blue", "green"),0.2))
 predplot1
 
+pdf("plots/native_by_community.pdf", height=4, width=6)
+grid.draw(nativeplot1)
+dev.off()
+
+pdf("plots/invasive_by_community.pdf", height=4, width=6)
+grid.draw(invasiveplot1)
+dev.off()
+
+pdf("plots/all_by_community.pdf", height=4, width=6)
+grid.draw(allplot1)
+dev.off()
+
+pdf("plots/pred_by_community.pdf", height=4, width=6)
+grid.draw(predplot1)
+dev.off()

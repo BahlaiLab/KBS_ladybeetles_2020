@@ -1,6 +1,121 @@
 # start by cleaning data
 
 #######################################
+
+#let's do it all at once
+
+MCSE<-read.csv("data/MCSE_working_alldata.txt",
+               header=T)
+Forest<-read.csv("data/Forest_working_alldata.txt",
+               header=T)
+
+#fix unmatched names
+names(Forest)<-names(MCSE)
+
+
+#append the two tables together
+
+all_lb<-rbind(MCSE, Forest)
+
+#Fit date format
+
+library(lubridate)
+
+all_lb$newdate<-mdy_hms(all_lb$DATE)
+all_lb$year<-year(all_lb$newdate)
+all_lb$DOY<-yday(all_lb$newdate)
+
+#cut NA data
+all_lb<-na.omit(all_lb)
+
+
+#now we fix the known typoes and give workable treatment names
+
+all_lb$TREAT_DESC<-gsub("Early succesional community", "Early successional", all_lb$TREAT_DESC)
+all_lb$TREAT_DESC<-gsub("Early successional community", "Early successional", all_lb$TREAT_DESC)
+all_lb$TREAT_DESC<-gsub("Early Successional Community", "Early successional", all_lb$TREAT_DESC)
+all_lb$TREAT_DESC<-gsub("Early sucessional community", "Early successional", all_lb$TREAT_DESC)
+all_lb$TREAT_DESC<-gsub("poplar trees", "Poplar trees", all_lb$TREAT_DESC)
+all_lb$TREAT_DESC<-gsub("Succesional", "Successional", all_lb$TREAT_DESC)
+all_lb$TREAT_DESC<-gsub("Sucessional", "Successional", all_lb$TREAT_DESC)
+all_lb$TREAT_DESC<-gsub("Alfalfa", "Alfalfa*", all_lb$TREAT_DESC)
+all_lb$TREAT_DESC<-gsub("Switchgrass", "Alfalfa*", all_lb$TREAT_DESC)
+all_lb$TREAT_DESC<-gsub("Biologically based \\(organic\\)", "Organic", all_lb$TREAT_DESC)
+all_lb$TREAT_DESC<-gsub("Conventional till", "Conventional", all_lb$TREAT_DESC)
+all_lb$TREAT_DESC<-as.factor(all_lb$TREAT_DESC)
+all_lb$HABITAT<-as.factor(all_lb$HABITAT)
+all_lb$REPLICATE<-as.factor(all_lb$REPLICATE)
+all_lb$STATION<-as.factor(all_lb$STATION)
+str(all_lb)
+
+#need to aggregate the data in a meaningful way
+
+
+library(reshape2)
+#tell R where the data is by melting it, assigning IDs to the columns
+PQUA1<-melt(PQUA, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
+#cast the data to count up the fireflies
+PQUA2<-dcast(PQUA1, year+TREAT_DESC+REPLICATE~., sum)
+#cast the data to count the traps
+PQUA3<-dcast(PQUA1, year+TREAT_DESC+REPLICATE~., length)
+#let's rename these new vectors within the data frame
+names(PQUA2)[4]<-"ADULTS"
+names(PQUA3)[4]<-"TRAPS"
+
+#rename the data frame and combine the number of traps we counted into it from PQUA3
+PQUA_summary<-PQUA2
+PQUA_summary$TRAPS<-PQUA3$TRAPS
+
+#create a new variable to account for trapping effort in a given year
+PQUA_summary$pertrap<-PQUA_summary$ADULTS/PQUA_summary$TRAPS
+
+
+
+####Creating a new treatment classification 
+
+PQUA_summary$TREAT_CAT=ifelse(PQUA_summary$TREAT_DESC=="Coniferous"|
+                                PQUA_summary$TREAT_DESC=="Deciduous"|
+                                PQUA_summary$TREAT_DESC=="Successional", "Forest", 
+                              ifelse(PQUA_summary$TREAT_DESC=="Alfalfa*"|
+                                       PQUA_summary$TREAT_DESC=="Early successional"|
+                                       PQUA_summary$TREAT_DESC=="Poplar trees", "Perennial",
+                                     ifelse(PQUA_summary$TREAT_DESC=="Conventional"|
+                                              PQUA_summary$TREAT_DESC=="No till"|
+                                              PQUA_summary$TREAT_DESC=="Organic"|
+                                              PQUA_summary$TREAT_DESC=="Reduced input", "Annual", "Check")))
+
+
+
+
+#plyr library for ddply function below
+library(plyr)
+
+# First make a dataframe for error bars
+PQUA_agg <- ddply(PQUA_summary, .(TREAT_CAT, year), summarise,
+                  mean.bugs = mean(pertrap),
+                  sd.bugs.pt = sd(pertrap),
+                  N = length(pertrap),
+                  SE = sd.bugs.pt / sqrt(N))
+
+
+
+
+
+
+
+
+
+
+
+
+###########
+#subset the data to include only data before August 10th or the 222 DOY
+all_lb= subset(all_lb, DOY > 0 & DOY < 222)
+#subset the data to include  1993 or later, because sampling changed to add forests then
+all_lb= subset(all_lb, year >= 1993)
+
+
+#
 #bring data in from 
 PQUA<-read.csv("data/PQUA2020comb.csv",
                header=T)
@@ -2249,10 +2364,11 @@ visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
 
-allplot1<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures",
+allplot1<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="relative index of abundance",
                     gg=TRUE, overlay=T, jitter=F, partial=FALSE, rug=FALSE, 
                     points=list(cex=1, pch=1))+
-  scale_y_continuous()+theme_bw()+labs(color='Community type', fill='Community type')
+  scale_y_continuous()+theme_bw()+labs(color='Community type', fill='Community type')+
+  theme(legend.position = c(0.2,0.3))
 allplot1
 
 #predation potential
@@ -2309,10 +2425,15 @@ pdf("plots/invasive_by_community.pdf", height=4, width=6)
 grid.draw(invasiveplot1)
 dev.off()
 
-pdf("plots/all_by_community.pdf", height=4, width=6)
+pdf("plots/all_by_community.pdf", height=4, width=4.5)
 grid.draw(allplot1)
 dev.off()
 
 pdf("plots/pred_by_community.pdf", height=4, width=6)
 grid.draw(predplot1)
+dev.off()
+
+setEPS()
+postscript("plots/all_by_community.eps", height=4, width=4.5)
+grid.draw(allplot1)
 dev.off()

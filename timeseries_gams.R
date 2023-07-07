@@ -29,7 +29,7 @@ all_lb$DOY<-yday(all_lb$newdate)
 all_lb<-na.omit(all_lb)
 
 
-#now we fix the known typoes and give workable treatment names
+#now we fix the known typos and give workable treatment names
 
 all_lb$TREAT_DESC<-gsub("Early succesional community", "Early successional", all_lb$TREAT_DESC)
 all_lb$TREAT_DESC<-gsub("Early successional community", "Early successional", all_lb$TREAT_DESC)
@@ -48,121 +48,47 @@ all_lb$REPLICATE<-as.factor(all_lb$REPLICATE)
 all_lb$STATION<-as.factor(all_lb$STATION)
 str(all_lb)
 
-#need to aggregate the data in a meaningful way
 
 
-library(reshape2)
-#tell R where the data is by melting it, assigning IDs to the columns
-PQUA1<-melt(PQUA, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
-#cast the data to count up the fireflies
-PQUA2<-dcast(PQUA1, year+TREAT_DESC+REPLICATE~., sum)
-#cast the data to count the traps
-PQUA3<-dcast(PQUA1, year+TREAT_DESC+REPLICATE~., length)
-#let's rename these new vectors within the data frame
-names(PQUA2)[4]<-"ADULTS"
-names(PQUA3)[4]<-"TRAPS"
-
-#rename the data frame and combine the number of traps we counted into it from PQUA3
-PQUA_summary<-PQUA2
-PQUA_summary$TRAPS<-PQUA3$TRAPS
-
-#create a new variable to account for trapping effort in a given year
-PQUA_summary$pertrap<-PQUA_summary$ADULTS/PQUA_summary$TRAPS
-
-
-
-####Creating a new treatment classification 
-
-PQUA_summary$TREAT_CAT=ifelse(PQUA_summary$TREAT_DESC=="Coniferous"|
-                                PQUA_summary$TREAT_DESC=="Deciduous"|
-                                PQUA_summary$TREAT_DESC=="Successional", "Forest", 
-                              ifelse(PQUA_summary$TREAT_DESC=="Alfalfa*"|
-                                       PQUA_summary$TREAT_DESC=="Early successional"|
-                                       PQUA_summary$TREAT_DESC=="Poplar trees", "Perennial",
-                                     ifelse(PQUA_summary$TREAT_DESC=="Conventional"|
-                                              PQUA_summary$TREAT_DESC=="No till"|
-                                              PQUA_summary$TREAT_DESC=="Organic"|
-                                              PQUA_summary$TREAT_DESC=="Reduced input", "Annual", "Check")))
-
-
-
-
-#plyr library for ddply function below
-library(plyr)
-
-# First make a dataframe for error bars
-PQUA_agg <- ddply(PQUA_summary, .(TREAT_CAT, year), summarise,
-                  mean.bugs = mean(pertrap),
-                  sd.bugs.pt = sd(pertrap),
-                  N = length(pertrap),
-                  SE = sd.bugs.pt / sqrt(N))
-
-
-
-
-
-
-
-
-
-
-
+#need to aggregate the data in a meaningful way by species
 
 ###########
 #subset the data to include only data before August 10th or the 222 DOY
 all_lb= subset(all_lb, DOY > 0 & DOY < 222)
 #subset the data to include  1993 or later, because sampling changed to add forests then
 all_lb= subset(all_lb, year >= 1993)
+#also, let's cut off the data at 2020, because we had to change traps in 2021, will explore in Manning study
+all_lb= subset(all_lb, year <= 2020)
 
+#let's start by making the individual data frames like we had before
 
-#
-#bring data in from 
-PQUA<-read.csv("data/PQUA2020comb.csv",
-               header=T)
-
-
-#details of cleaning in the code in comments found at that link- in summary, get all the typoes
-#out and make the date column usable
-
-
-library(lubridate)
-colnames(PQUA)[1]="DATE"
-colnames(PQUA)[4]="REPLICATE"
-PQUA$newdate<-mdy(PQUA$DATE)
-PQUA$year<-year(PQUA$newdate)
-PQUA$DOY<-yday(PQUA$newdate)
-PQUA<-na.omit(PQUA)
-PQUA$TREAT_DESC<-gsub("Early succesional community", "Early successional", PQUA$TREAT_DESC)
-PQUA$TREAT_DESC<-gsub("Early successional community", "Early successional", PQUA$TREAT_DESC)
-PQUA$TREAT_DESC<-gsub("Early Successional Community", "Early successional", PQUA$TREAT_DESC)
-PQUA$TREAT_DESC<-gsub("Early sucessional community", "Early successional", PQUA$TREAT_DESC)
-PQUA$TREAT_DESC<-gsub("poplar trees", "Poplar trees", PQUA$TREAT_DESC)
-PQUA$TREAT_DESC<-gsub("Succesional", "Successional", PQUA$TREAT_DESC)
-PQUA$TREAT_DESC<-gsub("Sucessional", "Successional", PQUA$TREAT_DESC)
-PQUA$TREAT_DESC<-gsub("Alfalfa", "Alfalfa*", PQUA$TREAT_DESC)
-PQUA$TREAT_DESC<-gsub("Switchgrass", "Alfalfa*", PQUA$TREAT_DESC)
-PQUA$TREAT_DESC<-gsub("Biologically based \\(organic\\)", "Organic", PQUA$TREAT_DESC)
-PQUA$TREAT_DESC<-gsub("Conventional till", "Conventional", PQUA$TREAT_DESC)
-PQUA$TREAT_DESC<-as.factor(PQUA$TREAT_DESC)
-PQUA$HABITAT<-as.factor(PQUA$HABITAT)
-PQUA$REPLICATE<-as.factor(PQUA$REPLICATE)
-PQUA$STATION<-as.factor(PQUA$STATION)
-str(PQUA)
-
-###########
-#subset the data to include only data before August 10th or the 222 DOY
-PQUA= subset(PQUA, DOY > 0 & DOY < 222)
-#subset the data to include  1993 or later, because sampling changed to add forests then
-PQUA= subset(PQUA, year >= 1993)
-
-# data is currently structured as subsamples, replicates, across treatments. We know from 
-# http://biorxiv.org/content/early/2016/09/11/074633 that the organisms were most abundant in
-# Alfalfa and no-till treatments, so we should use data from these treatments if we're 
-# interested in picking up trends over time. We also don't really care about within
-# year dynamics for this experiment- we essentially want a summary measure of what was going on
-#within a rep, within a year. So let's reshape the data, drop out irrelevant treatments.
+all_lb1<-all_lb
+all_lb1$SPID<-NULL
 
 library(reshape2)
+library(plyr)
+
+ABIPN<-all_lb1[which(all_lb$SPID=="ABIPN"),]
+BURSI<-all_lb1[which(all_lb$SPID=="BURSI"),]
+C7<-all_lb1[which(all_lb$SPID=="C7"),]
+CMAC<-all_lb1[which(all_lb$SPID=="CMAC"),]
+CSTIG<-all_lb1[which(all_lb$SPID=="CSTIG"),]
+CTRIF<-all_lb1[which(all_lb$SPID=="CTRIF"),]
+CYCSP<-all_lb1[which(all_lb$SPID=="CYCSP"),]
+H13<-all_lb1[which(all_lb$SPID=="H13"),]
+HAXY<-all_lb1[which(all_lb$SPID=="HAXY"),]
+HCONV<-all_lb1[which(all_lb$SPID=="HCONV"),]
+HGLAC<-all_lb1[which(all_lb$SPID=="HGLAC"),]
+HPARN<-all_lb1[which(all_lb$SPID=="HPARN"),]
+HVAR<-all_lb1[which(all_lb$SPID=="HVAR"),]
+PQUA<-all_lb1[which(all_lb$SPID=="PQUA"),]
+
+
+
+#####################################################################################
+
+#PQUA
+
 #tell R where the data is by melting it, assigning IDs to the columns
 PQUA1<-melt(PQUA, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
@@ -198,8 +124,7 @@ PQUA_summary$TREAT_CAT=ifelse(PQUA_summary$TREAT_DESC=="Coniferous"|
 
 
 
-#plyr library for ddply function below
-library(plyr)
+
 
 # First make a dataframe for error bars
 PQUA_agg <- ddply(PQUA_summary, .(TREAT_CAT, year), summarise,
@@ -213,42 +138,7 @@ PQUA_agg <- ddply(PQUA_summary, .(TREAT_CAT, year), summarise,
 
 #HVAR
 
-#bring data in from 
-HVAR<-read.csv("data/HVAR2020comb.csv",
-               header=T)
 
-
-library(lubridate)
-colnames(HVAR)[1]="DATE"
-colnames(HVAR)[4]="REPLICATE"
-HVAR$newdate<-mdy(HVAR$DATE)
-HVAR$year<-year(HVAR$newdate)
-HVAR$DOY<-yday(HVAR$newdate)
-HVAR<-na.omit(HVAR)
-HVAR$TREAT_DESC<-gsub("Early succesional community", "Early successional", HVAR$TREAT_DESC)
-HVAR$TREAT_DESC<-gsub("Early successional community", "Early successional", HVAR$TREAT_DESC)
-HVAR$TREAT_DESC<-gsub("Early Successional Community", "Early successional", HVAR$TREAT_DESC)
-HVAR$TREAT_DESC<-gsub("Early sucessional community", "Early successional", HVAR$TREAT_DESC)
-HVAR$TREAT_DESC<-gsub("poplar trees", "Poplar trees", HVAR$TREAT_DESC)
-HVAR$TREAT_DESC<-gsub("Succesional", "Successional", HVAR$TREAT_DESC)
-HVAR$TREAT_DESC<-gsub("Sucessional", "Successional", HVAR$TREAT_DESC)
-HVAR$TREAT_DESC<-gsub("Alfalfa", "Alfalfa*", HVAR$TREAT_DESC)
-HVAR$TREAT_DESC<-gsub("Switchgrass", "Alfalfa*", HVAR$TREAT_DESC)
-HVAR$TREAT_DESC<-gsub("Biologically based \\(organic\\)", "Organic", HVAR$TREAT_DESC)
-HVAR$TREAT_DESC<-gsub("Conventional till", "Conventional", HVAR$TREAT_DESC)
-HVAR$TREAT_DESC<-as.factor(HVAR$TREAT_DESC)
-HVAR$HABITAT<-as.factor(HVAR$HABITAT)
-HVAR$REPLICATE<-as.factor(HVAR$REPLICATE)
-HVAR$STATION<-as.factor(HVAR$STATION)
-str(HVAR)
-
-###########
-#subset the data to include only data before August 10th or the 222 DOY
-HVAR= subset(HVAR, DOY > 0 & DOY < 222)
-#subset the data to include  1993 or later, because sampling changed to add forests then
-HVAR= subset(HVAR, year >= 1993)
-
-library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
 HVAR1<-melt(HVAR, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
@@ -298,46 +188,6 @@ HVAR_agg <- ddply(HVAR_summary, .(TREAT_CAT, year), summarise,
 
 #HPARN
 
-#bring data in from 
-HPARN<-read.csv("data/HPARN2020comb.csv",
-                header=T)
-
-
-#details of cleaning in the code in comments found at that link- in summary, get all the typoes
-#out and make the date column usable
-
-
-library(lubridate)
-colnames(HPARN)[1]="DATE"
-colnames(HPARN)[4]="REPLICATE"
-HPARN$newdate<-mdy(HPARN$DATE)
-HPARN$year<-year(HPARN$newdate)
-HPARN$DOY<-yday(HPARN$newdate)
-HPARN<-na.omit(HPARN)
-HPARN$TREAT_DESC<-gsub("Early succesional community", "Early successional", HPARN$TREAT_DESC)
-HPARN$TREAT_DESC<-gsub("Early successional community", "Early successional", HPARN$TREAT_DESC)
-HPARN$TREAT_DESC<-gsub("Early Successional Community", "Early successional", HPARN$TREAT_DESC)
-HPARN$TREAT_DESC<-gsub("Early sucessional community", "Early successional", HPARN$TREAT_DESC)
-HPARN$TREAT_DESC<-gsub("poplar trees", "Poplar trees", HPARN$TREAT_DESC)
-HPARN$TREAT_DESC<-gsub("Succesional", "Successional", HPARN$TREAT_DESC)
-HPARN$TREAT_DESC<-gsub("Sucessional", "Successional", HPARN$TREAT_DESC)
-HPARN$TREAT_DESC<-gsub("Alfalfa", "Alfalfa*", HPARN$TREAT_DESC)
-HPARN$TREAT_DESC<-gsub("Switchgrass", "Alfalfa*", HPARN$TREAT_DESC)
-HPARN$TREAT_DESC<-gsub("Biologically based \\(organic\\)", "Organic", HPARN$TREAT_DESC)
-HPARN$TREAT_DESC<-gsub("Conventional till", "Conventional", HPARN$TREAT_DESC)
-HPARN$TREAT_DESC<-as.factor(HPARN$TREAT_DESC)
-HPARN$HABITAT<-as.factor(HPARN$HABITAT)
-HPARN$REPLICATE<-as.factor(HPARN$REPLICATE)
-HPARN$STATION<-as.factor(HPARN$STATION)
-str(HPARN)
-
-###########
-#subset the data to include only data before August 10th or the 222 DOY
-HPARN= subset(HPARN, DOY > 0 & DOY < 222)
-#subset the data to include  1993 or later, because sampling changed to add forests then
-HPARN= subset(HPARN, year >= 1993)
-
-library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
 HPARN1<-melt(HPARN, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
@@ -388,46 +238,7 @@ HPARN_agg <- ddply(HPARN_summary, .(TREAT_CAT, year), summarise,
 
 #HGLAC
 
-#bring data in from 
-HGLAC<-read.csv("data/HGLAC2020comb.csv",
-                header=T)
 
-
-#details of cleaning in the code in comments found at that link- in summary, get all the typoes
-#out and make the date column usable
-
-
-library(lubridate)
-colnames(HGLAC)[1]="DATE"
-colnames(HGLAC)[4]="REPLICATE"
-HGLAC$newdate<-mdy(HGLAC$DATE)
-HGLAC$year<-year(HGLAC$newdate)
-HGLAC$DOY<-yday(HGLAC$newdate)
-HGLAC<-na.omit(HGLAC)
-HGLAC$TREAT_DESC<-gsub("Early succesional community", "Early successional", HGLAC$TREAT_DESC)
-HGLAC$TREAT_DESC<-gsub("Early successional community", "Early successional", HGLAC$TREAT_DESC)
-HGLAC$TREAT_DESC<-gsub("Early Successional Community", "Early successional", HGLAC$TREAT_DESC)
-HGLAC$TREAT_DESC<-gsub("Early sucessional community", "Early successional", HGLAC$TREAT_DESC)
-HGLAC$TREAT_DESC<-gsub("poplar trees", "Poplar trees", HGLAC$TREAT_DESC)
-HGLAC$TREAT_DESC<-gsub("Succesional", "Successional", HGLAC$TREAT_DESC)
-HGLAC$TREAT_DESC<-gsub("Sucessional", "Successional", HGLAC$TREAT_DESC)
-HGLAC$TREAT_DESC<-gsub("Alfalfa", "Alfalfa*", HGLAC$TREAT_DESC)
-HGLAC$TREAT_DESC<-gsub("Switchgrass", "Alfalfa*", HGLAC$TREAT_DESC)
-HGLAC$TREAT_DESC<-gsub("Biologically based \\(organic\\)", "Organic", HGLAC$TREAT_DESC)
-HGLAC$TREAT_DESC<-gsub("Conventional till", "Conventional", HGLAC$TREAT_DESC)
-HGLAC$TREAT_DESC<-as.factor(HGLAC$TREAT_DESC)
-HGLAC$HABITAT<-as.factor(HGLAC$HABITAT)
-HGLAC$REPLICATE<-as.factor(HGLAC$REPLICATE)
-HGLAC$STATION<-as.factor(HGLAC$STATION)
-str(HGLAC)
-
-###########
-#subset the data to include only data before August 10th or the 222 DOY
-HGLAC= subset(HGLAC, DOY > 0 & DOY < 222)
-#subset the data to include  1993 or later, because sampling changed to add forests then
-HGLAC= subset(HGLAC, year >= 1993)
-
-library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
 HGLAC1<-melt(HGLAC, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
@@ -478,46 +289,7 @@ HGLAC_agg <- ddply(HGLAC_summary, .(TREAT_CAT, year), summarise,
 
 #HCONV
 
-#bring data in from 
-HCONV<-read.csv("data/HCONV2020comb.csv",
-                header=T)
 
-
-#details of cleaning in the code in comments found at that link- in summary, get all the typoes
-#out and make the date column usable
-
-
-library(lubridate)
-colnames(HCONV)[1]="DATE"
-colnames(HCONV)[4]="REPLICATE"
-HCONV$newdate<-mdy(HCONV$DATE)
-HCONV$year<-year(HCONV$newdate)
-HCONV$DOY<-yday(HCONV$newdate)
-HCONV<-na.omit(HCONV)
-HCONV$TREAT_DESC<-gsub("Early succesional community", "Early successional", HCONV$TREAT_DESC)
-HCONV$TREAT_DESC<-gsub("Early successional community", "Early successional", HCONV$TREAT_DESC)
-HCONV$TREAT_DESC<-gsub("Early Successional Community", "Early successional", HCONV$TREAT_DESC)
-HCONV$TREAT_DESC<-gsub("Early sucessional community", "Early successional", HCONV$TREAT_DESC)
-HCONV$TREAT_DESC<-gsub("poplar trees", "Poplar trees", HCONV$TREAT_DESC)
-HCONV$TREAT_DESC<-gsub("Succesional", "Successional", HCONV$TREAT_DESC)
-HCONV$TREAT_DESC<-gsub("Sucessional", "Successional", HCONV$TREAT_DESC)
-HCONV$TREAT_DESC<-gsub("Alfalfa", "Alfalfa*", HCONV$TREAT_DESC)
-HCONV$TREAT_DESC<-gsub("Switchgrass", "Alfalfa*", HCONV$TREAT_DESC)
-HCONV$TREAT_DESC<-gsub("Biologically based \\(organic\\)", "Organic", HCONV$TREAT_DESC)
-HCONV$TREAT_DESC<-gsub("Conventional till", "Conventional", HCONV$TREAT_DESC)
-HCONV$TREAT_DESC<-as.factor(HCONV$TREAT_DESC)
-HCONV$HABITAT<-as.factor(HCONV$HABITAT)
-HCONV$REPLICATE<-as.factor(HCONV$REPLICATE)
-HCONV$STATION<-as.factor(HCONV$STATION)
-str(HCONV)
-
-###########
-#subset the data to include only data before August 10th or the 222 DOY
-HCONV= subset(HCONV, DOY > 0 & DOY < 222)
-#subset the data to include  1993 or later, because sampling changed to add forests then
-HCONV= subset(HCONV, year >= 1993)
-
-library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
 HCONV1<-melt(HCONV, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
@@ -568,46 +340,7 @@ HCONV_agg <- ddply(HCONV_summary, .(TREAT_CAT, year), summarise,
 
 #HAXY
 
-#bring data in from 
-HAXY<-read.csv("data/HAXY2020comb.csv",
-               header=T)
 
-
-#details of cleaning in the code in comments found at that link- in summary, get all the typoes
-#out and make the date column usable
-
-
-library(lubridate)
-colnames(HAXY)[1]="DATE"
-colnames(HAXY)[4]="REPLICATE"
-HAXY$newdate<-mdy(HAXY$DATE)
-HAXY$year<-year(HAXY$newdate)
-HAXY$DOY<-yday(HAXY$newdate)
-HAXY<-na.omit(HAXY)
-HAXY$TREAT_DESC<-gsub("Early succesional community", "Early successional", HAXY$TREAT_DESC)
-HAXY$TREAT_DESC<-gsub("Early successional community", "Early successional", HAXY$TREAT_DESC)
-HAXY$TREAT_DESC<-gsub("Early Successional Community", "Early successional", HAXY$TREAT_DESC)
-HAXY$TREAT_DESC<-gsub("Early sucessional community", "Early successional", HAXY$TREAT_DESC)
-HAXY$TREAT_DESC<-gsub("poplar trees", "Poplar trees", HAXY$TREAT_DESC)
-HAXY$TREAT_DESC<-gsub("Succesional", "Successional", HAXY$TREAT_DESC)
-HAXY$TREAT_DESC<-gsub("Sucessional", "Successional", HAXY$TREAT_DESC)
-HAXY$TREAT_DESC<-gsub("Alfalfa", "Alfalfa*", HAXY$TREAT_DESC)
-HAXY$TREAT_DESC<-gsub("Switchgrass", "Alfalfa*", HAXY$TREAT_DESC)
-HAXY$TREAT_DESC<-gsub("Biologically based \\(organic\\)", "Organic", HAXY$TREAT_DESC)
-HAXY$TREAT_DESC<-gsub("Conventional till", "Conventional", HAXY$TREAT_DESC)
-HAXY$TREAT_DESC<-as.factor(HAXY$TREAT_DESC)
-HAXY$HABITAT<-as.factor(HAXY$HABITAT)
-HAXY$REPLICATE<-as.factor(HAXY$REPLICATE)
-HAXY$STATION<-as.factor(HAXY$STATION)
-str(HAXY)
-
-###########
-#subset the data to include only data before August 10th or the 222 DOY
-HAXY= subset(HAXY, DOY > 0 & DOY < 222)
-#subset the data to include  1993 or later, because sampling changed to add forests then
-HAXY= subset(HAXY, year >= 1993)
-
-library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
 HAXY1<-melt(HAXY, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
@@ -656,46 +389,6 @@ HAXY_agg <- ddply(HAXY_summary, .(TREAT_CAT, year), summarise,
 
 #H13
 
-#bring data in from 
-H13<-read.csv("data/H132020comb.csv",
-              header=T)
-
-
-#details of cleaning in the code in comments found at that link- in summary, get all the typoes
-#out and make the date column usable
-
-
-library(lubridate)
-colnames(H13)[1]="DATE"
-colnames(H13)[4]="REPLICATE"
-H13$newdate<-mdy(H13$DATE)
-H13$year<-year(H13$newdate)
-H13$DOY<-yday(H13$newdate)
-H13<-na.omit(H13)
-H13$TREAT_DESC<-gsub("Early succesional community", "Early successional", H13$TREAT_DESC)
-H13$TREAT_DESC<-gsub("Early successional community", "Early successional", H13$TREAT_DESC)
-H13$TREAT_DESC<-gsub("Early Successional Community", "Early successional", H13$TREAT_DESC)
-H13$TREAT_DESC<-gsub("Early sucessional community", "Early successional", H13$TREAT_DESC)
-H13$TREAT_DESC<-gsub("poplar trees", "Poplar trees", H13$TREAT_DESC)
-H13$TREAT_DESC<-gsub("Succesional", "Successional", H13$TREAT_DESC)
-H13$TREAT_DESC<-gsub("Sucessional", "Successional", H13$TREAT_DESC)
-H13$TREAT_DESC<-gsub("Alfalfa", "Alfalfa*", H13$TREAT_DESC)
-H13$TREAT_DESC<-gsub("Switchgrass", "Alfalfa*", H13$TREAT_DESC)
-H13$TREAT_DESC<-gsub("Biologically based \\(organic\\)", "Organic", H13$TREAT_DESC)
-H13$TREAT_DESC<-gsub("Conventional till", "Conventional", H13$TREAT_DESC)
-H13$TREAT_DESC<-as.factor(H13$TREAT_DESC)
-H13$HABITAT<-as.factor(H13$HABITAT)
-H13$REPLICATE<-as.factor(H13$REPLICATE)
-H13$STATION<-as.factor(H13$STATION)
-str(H13)
-
-###########
-#subset the data to include only data before August 10th or the 222 DOY
-H13= subset(H13, DOY > 0 & DOY < 222)
-#subset the data to include  1993 or later, because sampling changed to add forests then
-H13= subset(H13, year >= 1993)
-
-library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
 H131<-melt(H13, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
@@ -743,46 +436,7 @@ H13_agg <- ddply(H13_summary, .(TREAT_CAT, year), summarise,
 
 #CYCSP
 
-#bring data in from 
-CYCSP<-read.csv("data/CYCSP2020comb.csv",
-                header=T)
 
-
-#details of cleaning in the code in comments found at that link- in summary, get all the typoes
-#out and make the date column usable
-
-
-library(lubridate)
-colnames(CYCSP)[1]="DATE"
-colnames(CYCSP)[4]="REPLICATE"
-CYCSP$newdate<-mdy(CYCSP$DATE)
-CYCSP$year<-year(CYCSP$newdate)
-CYCSP$DOY<-yday(CYCSP$newdate)
-CYCSP<-na.omit(CYCSP)
-CYCSP$TREAT_DESC<-gsub("Early succesional community", "Early successional", CYCSP$TREAT_DESC)
-CYCSP$TREAT_DESC<-gsub("Early successional community", "Early successional", CYCSP$TREAT_DESC)
-CYCSP$TREAT_DESC<-gsub("Early Successional Community", "Early successional", CYCSP$TREAT_DESC)
-CYCSP$TREAT_DESC<-gsub("Early sucessional community", "Early successional", CYCSP$TREAT_DESC)
-CYCSP$TREAT_DESC<-gsub("poplar trees", "Poplar trees", CYCSP$TREAT_DESC)
-CYCSP$TREAT_DESC<-gsub("Succesional", "Successional", CYCSP$TREAT_DESC)
-CYCSP$TREAT_DESC<-gsub("Sucessional", "Successional", CYCSP$TREAT_DESC)
-CYCSP$TREAT_DESC<-gsub("Alfalfa", "Alfalfa*", CYCSP$TREAT_DESC)
-CYCSP$TREAT_DESC<-gsub("Switchgrass", "Alfalfa*", CYCSP$TREAT_DESC)
-CYCSP$TREAT_DESC<-gsub("Biologically based \\(organic\\)", "Organic", CYCSP$TREAT_DESC)
-CYCSP$TREAT_DESC<-gsub("Conventional till", "Conventional", CYCSP$TREAT_DESC)
-CYCSP$TREAT_DESC<-as.factor(CYCSP$TREAT_DESC)
-CYCSP$HABITAT<-as.factor(CYCSP$HABITAT)
-CYCSP$REPLICATE<-as.factor(CYCSP$REPLICATE)
-CYCSP$STATION<-as.factor(CYCSP$STATION)
-str(CYCSP)
-
-###########
-#subset the data to include only data before August 10th or the 222 DOY
-CYCSP= subset(CYCSP, DOY > 0 & DOY < 222)
-#subset the data to include  1993 or later, because sampling changed to add forests then
-CYCSP= subset(CYCSP, year >= 1993)
-
-library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
 CYCSP1<-melt(CYCSP, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
@@ -832,46 +486,7 @@ CYCSP_agg <- ddply(CYCSP_summary, .(TREAT_CAT, year), summarise,
 
 #CTRIF
 
-#bring data in from 
-CTRIF<-read.csv("data/CTRIF2020comb.csv",
-                header=T)
 
-
-#details of cleaning in the code in comments found at that link- in summary, get all the typoes
-#out and make the date column usable
-
-
-library(lubridate)
-colnames(CTRIF)[1]="DATE"
-colnames(CTRIF)[4]="REPLICATE"
-CTRIF$newdate<-mdy(CTRIF$DATE)
-CTRIF$year<-year(CTRIF$newdate)
-CTRIF$DOY<-yday(CTRIF$newdate)
-CTRIF<-na.omit(CTRIF)
-CTRIF$TREAT_DESC<-gsub("Early succesional community", "Early successional", CTRIF$TREAT_DESC)
-CTRIF$TREAT_DESC<-gsub("Early successional community", "Early successional", CTRIF$TREAT_DESC)
-CTRIF$TREAT_DESC<-gsub("Early Successional Community", "Early successional", CTRIF$TREAT_DESC)
-CTRIF$TREAT_DESC<-gsub("Early sucessional community", "Early successional", CTRIF$TREAT_DESC)
-CTRIF$TREAT_DESC<-gsub("poplar trees", "Poplar trees", CTRIF$TREAT_DESC)
-CTRIF$TREAT_DESC<-gsub("Succesional", "Successional", CTRIF$TREAT_DESC)
-CTRIF$TREAT_DESC<-gsub("Sucessional", "Successional", CTRIF$TREAT_DESC)
-CTRIF$TREAT_DESC<-gsub("Alfalfa", "Alfalfa*", CTRIF$TREAT_DESC)
-CTRIF$TREAT_DESC<-gsub("Switchgrass", "Alfalfa*", CTRIF$TREAT_DESC)
-CTRIF$TREAT_DESC<-gsub("Biologically based \\(organic\\)", "Organic", CTRIF$TREAT_DESC)
-CTRIF$TREAT_DESC<-gsub("Conventional till", "Conventional", CTRIF$TREAT_DESC)
-CTRIF$TREAT_DESC<-as.factor(CTRIF$TREAT_DESC)
-CTRIF$HABITAT<-as.factor(CTRIF$HABITAT)
-CTRIF$REPLICATE<-as.factor(CTRIF$REPLICATE)
-CTRIF$STATION<-as.factor(CTRIF$STATION)
-str(CTRIF)
-
-###########
-#subset the data to include only data before August 10th or the 222 DOY
-CTRIF= subset(CTRIF, DOY > 0 & DOY < 222)
-#subset the data to include  1993 or later, because sampling changed to add forests then
-CTRIF= subset(CTRIF, year >= 1993)
-
-library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
 CTRIF1<-melt(CTRIF, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
@@ -922,46 +537,7 @@ CTRIF_agg <- ddply(CTRIF_summary, .(TREAT_CAT, year), summarise,
 
 #CSTIG
 
-#bring data in from 
-CSTIG<-read.csv("data/CSTIG2020comb.csv",
-                header=T)
 
-
-#details of cleaning in the code in comments found at that link- in summary, get all the typoes
-#out and make the date column usable
-
-
-library(lubridate)
-colnames(CSTIG)[1]="DATE"
-colnames(CSTIG)[4]="REPLICATE"
-CSTIG$newdate<-mdy(CSTIG$DATE)
-CSTIG$year<-year(CSTIG$newdate)
-CSTIG$DOY<-yday(CSTIG$newdate)
-CSTIG<-na.omit(CSTIG)
-CSTIG$TREAT_DESC<-gsub("Early succesional community", "Early successional", CSTIG$TREAT_DESC)
-CSTIG$TREAT_DESC<-gsub("Early successional community", "Early successional", CSTIG$TREAT_DESC)
-CSTIG$TREAT_DESC<-gsub("Early Successional Community", "Early successional", CSTIG$TREAT_DESC)
-CSTIG$TREAT_DESC<-gsub("Early sucessional community", "Early successional", CSTIG$TREAT_DESC)
-CSTIG$TREAT_DESC<-gsub("poplar trees", "Poplar trees", CSTIG$TREAT_DESC)
-CSTIG$TREAT_DESC<-gsub("Succesional", "Successional", CSTIG$TREAT_DESC)
-CSTIG$TREAT_DESC<-gsub("Sucessional", "Successional", CSTIG$TREAT_DESC)
-CSTIG$TREAT_DESC<-gsub("Alfalfa", "Alfalfa*", CSTIG$TREAT_DESC)
-CSTIG$TREAT_DESC<-gsub("Switchgrass", "Alfalfa*", CSTIG$TREAT_DESC)
-CSTIG$TREAT_DESC<-gsub("Biologically based \\(organic\\)", "Organic", CSTIG$TREAT_DESC)
-CSTIG$TREAT_DESC<-gsub("Conventional till", "Conventional", CSTIG$TREAT_DESC)
-CSTIG$TREAT_DESC<-as.factor(CSTIG$TREAT_DESC)
-CSTIG$HABITAT<-as.factor(CSTIG$HABITAT)
-CSTIG$REPLICATE<-as.factor(CSTIG$REPLICATE)
-CSTIG$STATION<-as.factor(CSTIG$STATION)
-str(CSTIG)
-
-###########
-#subset the data to include only data before August 10th or the 222 DOY
-CSTIG= subset(CSTIG, DOY > 0 & DOY < 222)
-#subset the data to include  1993 or later, because sampling changed to add forests then
-CSTIG= subset(CSTIG, year >= 1993)
-
-library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
 CSTIG1<-melt(CSTIG, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
@@ -1003,46 +579,8 @@ CSTIG_summary$TREAT_CAT=ifelse(CSTIG_summary$TREAT_DESC=="Coniferous"|
 
 #CMAC
 
-#bring data in from 
-CMAC<-read.csv("data/CMAC2020comb.csv",
-               header=T)
 
 
-#details of cleaning in the code in comments found at that link- in summary, get all the typoes
-#out and make the date column usable
-
-
-library(lubridate)
-colnames(CMAC)[1]="DATE"
-colnames(CMAC)[4]="REPLICATE"
-CMAC$newdate<-mdy(CMAC$DATE)
-CMAC$year<-year(CMAC$newdate)
-CMAC$DOY<-yday(CMAC$newdate)
-CMAC<-na.omit(CMAC)
-CMAC$TREAT_DESC<-gsub("Early succesional community", "Early successional", CMAC$TREAT_DESC)
-CMAC$TREAT_DESC<-gsub("Early successional community", "Early successional", CMAC$TREAT_DESC)
-CMAC$TREAT_DESC<-gsub("Early Successional Community", "Early successional", CMAC$TREAT_DESC)
-CMAC$TREAT_DESC<-gsub("Early sucessional community", "Early successional", CMAC$TREAT_DESC)
-CMAC$TREAT_DESC<-gsub("poplar trees", "Poplar trees", CMAC$TREAT_DESC)
-CMAC$TREAT_DESC<-gsub("Succesional", "Successional", CMAC$TREAT_DESC)
-CMAC$TREAT_DESC<-gsub("Sucessional", "Successional", CMAC$TREAT_DESC)
-CMAC$TREAT_DESC<-gsub("Alfalfa", "Alfalfa*", CMAC$TREAT_DESC)
-CMAC$TREAT_DESC<-gsub("Switchgrass", "Alfalfa*", CMAC$TREAT_DESC)
-CMAC$TREAT_DESC<-gsub("Biologically based \\(organic\\)", "Organic", CMAC$TREAT_DESC)
-CMAC$TREAT_DESC<-gsub("Conventional till", "Conventional", CMAC$TREAT_DESC)
-CMAC$TREAT_DESC<-as.factor(CMAC$TREAT_DESC)
-CMAC$HABITAT<-as.factor(CMAC$HABITAT)
-CMAC$REPLICATE<-as.factor(CMAC$REPLICATE)
-CMAC$STATION<-as.factor(CMAC$STATION)
-str(CMAC)
-
-###########
-#subset the data to include only data before August 10th or the 222 DOY
-CMAC= subset(CMAC, DOY > 0 & DOY < 222)
-#subset the data to include  1993 or later, because sampling changed to add forests then
-CMAC= subset(CMAC, year >= 1993)
-
-library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
 CMAC1<-melt(CMAC, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
@@ -1095,46 +633,7 @@ CMAC_agg <- ddply(CMAC_summary, .(TREAT_CAT, year), summarise,
 
 #C7
 
-#bring data in from 
-C7<-read.csv("data/C72020comb.csv",
-             header=T)
 
-
-#details of cleaning in the code in comments found at that link- in summary, get all the typoes
-#out and make the date column usable
-
-
-library(lubridate)
-colnames(C7)[1]="DATE"
-colnames(C7)[4]="REPLICATE"
-C7$newdate<-mdy(C7$DATE)
-C7$year<-year(C7$newdate)
-C7$DOY<-yday(C7$newdate)
-C7<-na.omit(C7)
-C7$TREAT_DESC<-gsub("Early succesional community", "Early successional", C7$TREAT_DESC)
-C7$TREAT_DESC<-gsub("Early successional community", "Early successional", C7$TREAT_DESC)
-C7$TREAT_DESC<-gsub("Early Successional Community", "Early successional", C7$TREAT_DESC)
-C7$TREAT_DESC<-gsub("Early sucessional community", "Early successional", C7$TREAT_DESC)
-C7$TREAT_DESC<-gsub("poplar trees", "Poplar trees", C7$TREAT_DESC)
-C7$TREAT_DESC<-gsub("Succesional", "Successional", C7$TREAT_DESC)
-C7$TREAT_DESC<-gsub("Sucessional", "Successional", C7$TREAT_DESC)
-C7$TREAT_DESC<-gsub("Alfalfa", "Alfalfa*", C7$TREAT_DESC)
-C7$TREAT_DESC<-gsub("Switchgrass", "Alfalfa*", C7$TREAT_DESC)
-C7$TREAT_DESC<-gsub("Biologically based \\(organic\\)", "Organic", C7$TREAT_DESC)
-C7$TREAT_DESC<-gsub("Conventional till", "Conventional", C7$TREAT_DESC)
-C7$TREAT_DESC<-as.factor(C7$TREAT_DESC)
-C7$HABITAT<-as.factor(C7$HABITAT)
-C7$REPLICATE<-as.factor(C7$REPLICATE)
-C7$STATION<-as.factor(C7$STATION)
-str(C7)
-
-###########
-#subset the data to include only data before August 10th or the 222 DOY
-C7= subset(C7, DOY > 0 & DOY < 222)
-#subset the data to include  1993 or later, because sampling changed to add forests then
-C7= subset(C7, year >= 1993)
-
-library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
 C71<-melt(C7, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
@@ -1182,46 +681,7 @@ C7_agg <- ddply(C7_summary, .(TREAT_CAT, year), summarise,
 
 #BURSI
 
-#bring data in from 
-BURSI<-read.csv("data/BURSI2020comb.csv",
-                header=T)
 
-
-#details of cleaning in the code in comments found at that link- in summary, get all the typoes
-#out and make the date column usable
-
-
-library(lubridate)
-colnames(BURSI)[1]="DATE"
-colnames(BURSI)[4]="REPLICATE"
-BURSI$newdate<-mdy(BURSI$DATE)
-BURSI$year<-year(BURSI$newdate)
-BURSI$DOY<-yday(BURSI$newdate)
-BURSI<-na.omit(BURSI)
-BURSI$TREAT_DESC<-gsub("Early succesional community", "Early successional", BURSI$TREAT_DESC)
-BURSI$TREAT_DESC<-gsub("Early successional community", "Early successional", BURSI$TREAT_DESC)
-BURSI$TREAT_DESC<-gsub("Early Successional Community", "Early successional", BURSI$TREAT_DESC)
-BURSI$TREAT_DESC<-gsub("Early sucessional community", "Early successional", BURSI$TREAT_DESC)
-BURSI$TREAT_DESC<-gsub("poplar trees", "Poplar trees", BURSI$TREAT_DESC)
-BURSI$TREAT_DESC<-gsub("Succesional", "Successional", BURSI$TREAT_DESC)
-BURSI$TREAT_DESC<-gsub("Sucessional", "Successional", BURSI$TREAT_DESC)
-BURSI$TREAT_DESC<-gsub("Alfalfa", "Alfalfa*", BURSI$TREAT_DESC)
-BURSI$TREAT_DESC<-gsub("Switchgrass", "Alfalfa*", BURSI$TREAT_DESC)
-BURSI$TREAT_DESC<-gsub("Biologically based \\(organic\\)", "Organic", BURSI$TREAT_DESC)
-BURSI$TREAT_DESC<-gsub("Conventional till", "Conventional", BURSI$TREAT_DESC)
-BURSI$TREAT_DESC<-as.factor(BURSI$TREAT_DESC)
-BURSI$HABITAT<-as.factor(BURSI$HABITAT)
-BURSI$REPLICATE<-as.factor(BURSI$REPLICATE)
-BURSI$STATION<-as.factor(BURSI$STATION)
-str(BURSI)
-
-###########
-#subset the data to include only data before August 10th or the 222 DOY
-BURSI= subset(BURSI, DOY > 0 & DOY < 222)
-#subset the data to include  1993 or later, because sampling changed to add forests then
-BURSI= subset(BURSI, year >= 1993)
-
-library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
 BURSI1<-melt(BURSI, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
@@ -1270,46 +730,7 @@ BURSI_agg <- ddply(BURSI_summary, .(TREAT_CAT, year), summarise,
 
 #ABIPN
 
-#bring data in from 
-ABIPN<-read.csv("data/ABIPN2020comb.csv",
-                header=T)
 
-
-#details of cleaning in the code in comments found at that link- in summary, get all the typoes
-#out and make the date column usable
-
-
-library(lubridate)
-colnames(ABIPN)[1]="DATE"
-colnames(ABIPN)[4]="REPLICATE"
-ABIPN$newdate<-mdy(ABIPN$DATE)
-ABIPN$year<-year(ABIPN$newdate)
-ABIPN$DOY<-yday(ABIPN$newdate)
-ABIPN<-na.omit(ABIPN)
-ABIPN$TREAT_DESC<-gsub("Early succesional community", "Early successional", ABIPN$TREAT_DESC)
-ABIPN$TREAT_DESC<-gsub("Early successional community", "Early successional", ABIPN$TREAT_DESC)
-ABIPN$TREAT_DESC<-gsub("Early Successional Community", "Early successional", ABIPN$TREAT_DESC)
-ABIPN$TREAT_DESC<-gsub("Early sucessional community", "Early successional", ABIPN$TREAT_DESC)
-ABIPN$TREAT_DESC<-gsub("poplar trees", "Poplar trees", ABIPN$TREAT_DESC)
-ABIPN$TREAT_DESC<-gsub("Succesional", "Successional", ABIPN$TREAT_DESC)
-ABIPN$TREAT_DESC<-gsub("Sucessional", "Successional", ABIPN$TREAT_DESC)
-ABIPN$TREAT_DESC<-gsub("Alfalfa", "Alfalfa*", ABIPN$TREAT_DESC)
-ABIPN$TREAT_DESC<-gsub("Switchgrass", "Alfalfa*", ABIPN$TREAT_DESC)
-ABIPN$TREAT_DESC<-gsub("Biologically based \\(organic\\)", "Organic", ABIPN$TREAT_DESC)
-ABIPN$TREAT_DESC<-gsub("Conventional till", "Conventional", ABIPN$TREAT_DESC)
-ABIPN$TREAT_DESC<-as.factor(ABIPN$TREAT_DESC)
-ABIPN$HABITAT<-as.factor(ABIPN$HABITAT)
-ABIPN$REPLICATE<-as.factor(ABIPN$REPLICATE)
-ABIPN$STATION<-as.factor(ABIPN$STATION)
-str(ABIPN)
-
-###########
-#subset the data to include only data before August 10th or the 222 DOY
-ABIPN= subset(ABIPN, DOY > 0 & DOY < 222)
-#subset the data to include  1993 or later, because sampling changed to add forests then
-ABIPN= subset(ABIPN, year >= 1993)
-
-library(reshape2)
 #tell R where the data is by melting it, assigning IDs to the columns
 ABIPN1<-melt(ABIPN, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
@@ -1408,7 +829,7 @@ library(ggplot2)
 library(tidymv)
 library(grid)
 
-
+source("broken_window_script.R")
 
 #graphical parameters
 smooth.param<-0.5
@@ -1439,7 +860,7 @@ ABIPN.year<-ggplot(data=ABIPN.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.13, NA))
 ABIPN.year
@@ -1462,12 +883,33 @@ visreg(ABIPN.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+
+########Calculations for table #################
 #last 10 year trend
 ABIPN10<-subset(ABIPN_summary, year >= 2011)
 
 abi10mod<-lm(ADULTS~year, data=ABIPN10)
 
 summary(abi10mod)
+
+#whole timeseries trend
+
+abiallmod<-lm(ADULTS~year, data=ABIPN_summary)
+
+summary(abiallmod)
+
+#stability time
+
+stability_time(ABIPN_summary[,c(1,6)])
+
+#detection frequency in first five vs last five years
+
+
+ddply(ABIPN_summary, .(year), summarise,
+                     ADULTS = sum(ADULTS))
+
+
+
 
 ##########################################
 # make BURSI figure
@@ -1492,7 +934,7 @@ BURSI.year<-ggplot(data=BURSI.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 BURSI.year
@@ -1545,7 +987,7 @@ C7.year<-ggplot(data=C7.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 C7.year
@@ -1598,7 +1040,7 @@ CMAC.year<-ggplot(data=CMAC.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CMAC.year
@@ -1651,7 +1093,7 @@ CSTIG.year<-ggplot(data=CSTIG.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CSTIG.year
@@ -1704,7 +1146,7 @@ CTRIF.year<-ggplot(data=CTRIF.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CTRIF.year
@@ -1758,7 +1200,7 @@ CYCSP.year<-ggplot(data=CYCSP.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CYCSP.year
@@ -1813,7 +1255,7 @@ H13.year<-ggplot(data=H13.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 H13.year
@@ -1866,7 +1308,7 @@ HAXY.year<-ggplot(data=HAXY.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HAXY.year
@@ -1922,7 +1364,7 @@ HCONV.year<-ggplot(data=HCONV.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HCONV.year
@@ -1976,7 +1418,7 @@ HGLAC.year<-ggplot(data=HGLAC.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HGLAC.year
@@ -2030,7 +1472,7 @@ HPARN.year<-ggplot(data=HPARN.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HPARN.year
@@ -2085,7 +1527,7 @@ HVAR.year<-ggplot(data=HVAR.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HVAR.year
@@ -2139,7 +1581,7 @@ PQUA.year<-ggplot(data=PQUA.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
     theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 PQUA.year
@@ -2194,7 +1636,7 @@ native.year<-ggplot(data=native.pred, aes(year, fit))+
   geom_line()+
   
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 native.year
@@ -2224,7 +1666,7 @@ invasive.year<-ggplot(data=invasive.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 invasive.year
@@ -2253,7 +1695,7 @@ all_year<-ggplot(data=all_pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='grey', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2020)+
+  xlim(1993, 2021)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, NA))
 all_year
@@ -2437,3 +1879,13 @@ setEPS()
 postscript("plots/all_by_community.eps", height=4, width=4.5)
 grid.draw(allplot1)
 dev.off()
+
+
+
+
+# First make a dataframe for error bars
+alltot_agg <- ddply(all_tot, .(TREAT_CAT, year), summarise,
+                   mean.bugs = mean(ADULTS/TRAPS),
+                   sd.bugs.pt = sd(ADULTS/TRAPS),
+                   N = length(ADULTS/TRAPS),
+                   SE = sd.bugs.pt / sqrt(N))

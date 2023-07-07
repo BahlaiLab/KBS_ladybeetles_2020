@@ -1313,12 +1313,30 @@ visreg(CYCSP.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
 
+########Calculations for table #################
 #last 10 year trend
 CYCSP10<-subset(CYCSP_summary, year >= 2011)
 
-CYCSP10mod<-lm(ADULTS~year, data=CYCSP10)
+CYCSP10mod<-lm(pertrap~year, data=CYCSP10)
 
 summary(CYCSP10mod)
+
+#whole timeseries trend
+
+CYCSPallmod<-lm(pertrap~year, data=CYCSP_summary)
+
+summary(CYCSPallmod)
+
+#stability time
+
+stability_time(CYCSP_summary[,c(1,6)])
+
+#detection frequency in first five vs last five years
+
+
+ddply(CYCSP_summary, .(year), summarise,
+      ADULTS = sum(ADULTS))
+
 
 
 ##########################################
@@ -1367,12 +1385,30 @@ visreg(H13.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+########Calculations for table #################
 #last 10 year trend
 H1310<-subset(H13_summary, year >= 2011)
 
-H1310mod<-lm(ADULTS~year, data=H1310)
+H1310mod<-lm(pertrap~year, data=H1310)
 
 summary(H1310mod)
+
+#whole timeseries trend
+
+H13allmod<-lm(pertrap~year, data=H13_summary)
+
+summary(H13allmod)
+
+#stability time
+
+stability_time(H13_summary[,c(1,6)])
+
+#detection frequency in first five vs last five years
+
+
+ddply(H13_summary, .(year), summarise,
+      ADULTS = sum(ADULTS))
+
 
 ##########################################
 # make HAXY figure
@@ -1421,13 +1457,29 @@ visreg(HAXY.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+########Calculations for table #################
 #last 10 year trend
 HAXY10<-subset(HAXY_summary, year >= 2011)
 
-HAXY10mod<-lm(ADULTS~year, data=HAXY10)
+HAXY10mod<-lm(pertrap~year, data=HAXY10)
 
 summary(HAXY10mod)
 
+#whole timeseries trend
+
+HAXYallmod<-lm(pertrap~year, data=HAXY_summary)
+
+summary(HAXYallmod)
+
+#stability time
+
+stability_time(HAXY_summary[,c(1,6)])
+
+#detection frequency in first five vs last five years
+
+
+ddply(HAXY_summary, .(year), summarise,
+      ADULTS = sum(ADULTS))
 
 
 ##########################################
@@ -1475,13 +1527,31 @@ summary(HCONV.gam2)
 visreg(HCONV.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
-#last 10 year trend
 
+########Calculations for table #################
+#last 10 year trend
 HCONV10<-subset(HCONV_summary, year >= 2011)
 
-HCONV10mod<-lm(ADULTS~year, data=HCONV10)
+HCONV10mod<-lm(pertrap~year, data=HCONV10)
 
 summary(HCONV10mod)
+
+#whole timeseries trend
+
+HCONVallmod<-lm(pertrap~year, data=HCONV_summary)
+
+summary(HCONVallmod)
+
+#stability time
+
+stability_time(HCONV_summary[,c(1,6)])
+
+#detection frequency in first five vs last five years
+
+
+ddply(HCONV_summary, .(year), summarise,
+      ADULTS = sum(ADULTS))
+
 
 
 ##########################################
@@ -1530,13 +1600,30 @@ visreg(HGLAC.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+########Calculations for table #################
 #last 10 year trend
-
 HGLAC10<-subset(HGLAC_summary, year >= 2011)
 
-HGLAC10mod<-lm(ADULTS~year, data=HGLAC10)
+HGLAC10mod<-lm(pertrap~year, data=HGLAC10)
 
 summary(HGLAC10mod)
+
+#whole timeseries trend
+
+HGLACallmod<-lm(pertrap~year, data=HGLAC_summary)
+
+summary(HGLACallmod)
+
+#stability time
+
+stability_time(HGLAC_summary[,c(1,6)])
+
+#detection frequency in first five vs last five years
+
+
+ddply(HGLAC_summary, .(year), summarise,
+      ADULTS = sum(ADULTS))
+
 
 ##########################################
 # make HPARN figure

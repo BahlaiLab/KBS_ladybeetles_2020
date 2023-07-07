@@ -888,13 +888,13 @@ visreg(ABIPN.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 #last 10 year trend
 ABIPN10<-subset(ABIPN_summary, year >= 2011)
 
-abi10mod<-lm(ADULTS~year, data=ABIPN10)
+abi10mod<-lm(pertrap~year, data=ABIPN10)
 
 summary(abi10mod)
 
 #whole timeseries trend
 
-abiallmod<-lm(ADULTS~year, data=ABIPN_summary)
+abiallmod<-lm(pertrap~year, data=ABIPN_summary)
 
 summary(abiallmod)
 
@@ -957,12 +957,31 @@ visreg(BURSI.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+########Calculations for table #################
 #last 10 year trend
 BURSI10<-subset(BURSI_summary, year >= 2011)
 
-bursi10mod<-lm(ADULTS~year, data=BURSI10)
+BURSI10mod<-lm(pertrap~year, data=BURSI10)
 
-summary(bursi10mod)
+summary(BURSI10mod)
+
+#whole timeseries trend
+
+BURSIallmod<-lm(pertrap~year, data=BURSI_summary)
+
+summary(BURSIallmod)
+
+#stability time
+
+stability_time(BURSI_summary[,c(1,6)])
+
+#detection frequency in first five vs last five years
+
+
+ddply(BURSI_summary, .(year), summarise,
+      ADULTS = sum(ADULTS))
+
+
 
 ##########################################
 # make C7 figure
@@ -1010,12 +1029,29 @@ visreg(C7.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+########Calculations for table #################
 #last 10 year trend
 C710<-subset(C7_summary, year >= 2011)
 
-c710mod<-lm(ADULTS~year, data=C710)
+C710mod<-lm(pertrap~year, data=C710)
 
-summary(c710mod)
+summary(C710mod)
+
+#whole timeseries trend
+
+C7allmod<-lm(pertrap~year, data=C7_summary)
+
+summary(C7allmod)
+
+#stability time
+
+stability_time(C7_summary[,c(1,6)])
+
+#detection frequency in first five vs last five years
+
+
+ddply(C7_summary, .(year), summarise,
+      ADULTS = sum(ADULTS))
 
 ##########################################
 # make CMAC figure
@@ -1056,19 +1092,37 @@ visreg(CMAC.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
 CMAC.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
-             data=C7_summary, family="quasipoisson")
+             data=CMAC_summary, family="quasipoisson")
 summary(CMAC.gam2)
 
 visreg(CMAC.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+########Calculations for table #################
 #last 10 year trend
 CMAC10<-subset(CMAC_summary, year >= 2011)
 
-CMAC10mod<-lm(ADULTS~year, data=CMAC10)
+CMAC10mod<-lm(pertrap~year, data=CMAC10)
 
 summary(CMAC10mod)
+
+#whole timeseries trend
+
+CMACallmod<-lm(pertrap~year, data=CMAC_summary)
+
+summary(CMACallmod)
+
+#stability time
+
+stability_time(CMAC_summary[,c(1,6)])
+
+#detection frequency in first five vs last five years
+
+
+ddply(CMAC_summary, .(year), summarise,
+      ADULTS = sum(ADULTS))
+
 
 ##########################################
 # make CSTIG figure

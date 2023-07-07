@@ -1170,12 +1170,29 @@ visreg(CSTIG.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+########Calculations for table #################
 #last 10 year trend
 CSTIG10<-subset(CSTIG_summary, year >= 2011)
 
-CSTIG10mod<-lm(ADULTS~year, data=CSTIG10)
+CSTIG10mod<-lm(pertrap~year, data=CSTIG10)
 
 summary(CSTIG10mod)
+
+#whole timeseries trend
+
+CSTIGallmod<-lm(pertrap~year, data=CSTIG_summary)
+
+summary(CSTIGallmod)
+
+#stability time
+
+stability_time(CSTIG_summary[,c(1,6)])
+
+#detection frequency in first five vs last five years
+
+
+ddply(CSTIG_summary, .(year), summarise,
+      ADULTS = sum(ADULTS))
 
 ##########################################
 # make CTRIF figure
@@ -1223,12 +1240,30 @@ visreg(CTRIF.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+########Calculations for table #################
 #last 10 year trend
 CTRIF10<-subset(CTRIF_summary, year >= 2011)
 
-CTRIF10mod<-lm(ADULTS~year, data=CTRIF10)
+CTRIF10mod<-lm(pertrap~year, data=CTRIF10)
 
 summary(CTRIF10mod)
+
+#whole timeseries trend
+
+CTRIFallmod<-lm(pertrap~year, data=CTRIF_summary)
+
+summary(CTRIFallmod)
+
+#stability time
+
+stability_time(CTRIF_summary[,c(1,6)])
+
+#detection frequency in first five vs last five years
+
+
+ddply(CTRIF_summary, .(year), summarise,
+      ADULTS = sum(ADULTS))
+
 
 
 ##########################################

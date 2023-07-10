@@ -1671,13 +1671,30 @@ visreg(HPARN.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+########Calculations for table #################
 #last 10 year trend
-
 HPARN10<-subset(HPARN_summary, year >= 2011)
 
-HPARN10mod<-lm(ADULTS~year, data=HPARN10)
+HPARN10mod<-lm(pertrap~year, data=HPARN10)
 
 summary(HPARN10mod)
+
+#whole timeseries trend
+
+HPARNallmod<-lm(pertrap~year, data=HPARN_summary)
+
+summary(HPARNallmod)
+
+#stability time
+
+stability_time(HPARN_summary[,c(1,6)])
+
+#detection frequency in first five vs last five years
+
+
+ddply(HPARN_summary, .(year), summarise,
+      ADULTS = sum(ADULTS))
+
 
 
 ##########################################
@@ -1726,13 +1743,30 @@ visreg(HVAR.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+########Calculations for table #################
 #last 10 year trend
-
 HVAR10<-subset(HVAR_summary, year >= 2011)
 
-HVAR10mod<-lm(ADULTS~year, data=HVAR10)
+HVAR10mod<-lm(pertrap~year, data=HVAR10)
 
 summary(HVAR10mod)
+
+#whole timeseries trend
+
+HVARallmod<-lm(pertrap~year, data=HVAR_summary)
+
+summary(HVARallmod)
+
+#stability time
+
+stability_time(HVAR_summary[,c(1,6)])
+
+#detection frequency in first five vs last five years
+
+
+ddply(HVAR_summary, .(year), summarise,
+      ADULTS = sum(ADULTS))
+
 
 ##########################################
 # make PQUA figure
@@ -1779,14 +1813,30 @@ summary(PQUA.gam2)
 visreg(PQUA.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
-
+########Calculations for table #################
 #last 10 year trend
-
 PQUA10<-subset(PQUA_summary, year >= 2011)
 
-PQUA10mod<-lm(ADULTS~year, data=PQUA10)
+PQUA10mod<-lm(pertrap~year, data=PQUA10)
 
 summary(PQUA10mod)
+
+#whole timeseries trend
+
+PQUAallmod<-lm(pertrap~year, data=PQUA_summary)
+
+summary(PQUAallmod)
+
+#stability time
+
+stability_time(PQUA_summary[,c(1,6)])
+
+#detection frequency in first five vs last five years
+
+
+ddply(PQUA_summary, .(year), summarise,
+      ADULTS = sum(ADULTS))
+
 
 ##########################################
 # make all native figure

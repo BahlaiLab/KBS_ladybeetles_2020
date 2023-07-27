@@ -804,17 +804,22 @@ all_lb<-rbind(invasive, native)
 invasivetot <- ddply(invasive, .(year, TREAT_DESC, TREAT_CAT, REPLICATE), summarise,
                    ADULTS = sum(ADULTS),
                    TRAPS=max(TRAPS))
+invasivetot$pertrap<-invasivetot$ADULTS/invasivetot$TRAPS
+
 nativetot <- ddply(native, .(year, TREAT_DESC, TREAT_CAT,  REPLICATE), summarise,
                       ADULTS = sum(ADULTS),
                       TRAPS=max(TRAPS))
+nativetot$pertrap<-nativetot$ADULTS/nativetot$TRAPS
+
 all_tot <- ddply(all_lb, .(year, TREAT_DESC, TREAT_CAT,  REPLICATE), summarise,
                  ADULTS = sum(ADULTS),
                  TRAPS=max(TRAPS))
+all_tot$pertrap<-all_tot$ADULTS/all_tot$TRAPS
 
 pred_tot <- ddply(all_lb, .(year, TREAT_DESC, TREAT_CAT,  REPLICATE), summarise,
                  pred = sum(pred),
                  TRAPS=max(TRAPS))
-
+pred_tot$pertrap<-pred_tot$pred/pred_tot$TRAPS
 
 
 ######################################################################################
@@ -910,6 +915,14 @@ ddply(ABIPN_summary, .(year), summarise,
 
 
 
+out<-ddply(ABIPN_summary, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
+
 
 ##########################################
 # make BURSI figure
@@ -980,6 +993,15 @@ stability_time(BURSI_summary[,c(1,6)])
 
 ddply(BURSI_summary, .(year), summarise,
       ADULTS = sum(ADULTS))
+
+
+out<-ddply(BURSI_summary, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
 
 
 
@@ -1053,6 +1075,16 @@ stability_time(C7_summary[,c(1,6)])
 ddply(C7_summary, .(year), summarise,
       ADULTS = sum(ADULTS))
 
+out<-ddply(C7_summary, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
+
+
+
 ##########################################
 # make CMAC figure
 
@@ -1123,6 +1155,13 @@ stability_time(CMAC_summary[,c(1,6)])
 ddply(CMAC_summary, .(year), summarise,
       ADULTS = sum(ADULTS))
 
+out<-ddply(CMAC_summary, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
 
 ##########################################
 # make CSTIG figure
@@ -1193,6 +1232,15 @@ stability_time(CSTIG_summary[,c(1,6)])
 
 ddply(CSTIG_summary, .(year), summarise,
       ADULTS = sum(ADULTS))
+
+out<-ddply(CSTIG_summary, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
+
 
 ##########################################
 # make CTRIF figure
@@ -1265,7 +1313,13 @@ ddply(CTRIF_summary, .(year), summarise,
       ADULTS = sum(ADULTS))
 
 
+out<-ddply(CTRIF_summary, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
 
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
 ##########################################
 # make CYCSP figure
 
@@ -1337,7 +1391,13 @@ stability_time(CYCSP_summary[,c(1,6)])
 ddply(CYCSP_summary, .(year), summarise,
       ADULTS = sum(ADULTS))
 
+out<-ddply(CYCSP_summary, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
 
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
 
 ##########################################
 # make H13 figure
@@ -1409,6 +1469,13 @@ stability_time(H13_summary[,c(1,6)])
 ddply(H13_summary, .(year), summarise,
       ADULTS = sum(ADULTS))
 
+out<-ddply(H13_summary, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
 
 ##########################################
 # make HAXY figure
@@ -1481,7 +1548,13 @@ stability_time(HAXY_summary[,c(1,6)])
 ddply(HAXY_summary, .(year), summarise,
       ADULTS = sum(ADULTS))
 
+out<-ddply(HAXY_summary, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
 
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
 ##########################################
 # make HCONV figure
 
@@ -1552,7 +1625,13 @@ stability_time(HCONV_summary[,c(1,6)])
 ddply(HCONV_summary, .(year), summarise,
       ADULTS = sum(ADULTS))
 
+out<-ddply(HCONV_summary, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
 
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
 
 ##########################################
 # make HGLAC figure
@@ -1624,7 +1703,13 @@ stability_time(HGLAC_summary[,c(1,6)])
 ddply(HGLAC_summary, .(year), summarise,
       ADULTS = sum(ADULTS))
 
+out<-ddply(HGLAC_summary, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
 
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
 ##########################################
 # make HPARN figure
 
@@ -1695,7 +1780,13 @@ stability_time(HPARN_summary[,c(1,6)])
 ddply(HPARN_summary, .(year), summarise,
       ADULTS = sum(ADULTS))
 
+out<-ddply(HPARN_summary, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
 
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
 
 ##########################################
 # make HVAR figure
@@ -1768,6 +1859,13 @@ ddply(HVAR_summary, .(year), summarise,
       ADULTS = sum(ADULTS))
 
 
+out<-ddply(HVAR_summary, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
 ##########################################
 # make PQUA figure
 
@@ -1813,6 +1911,8 @@ summary(PQUA.gam2)
 visreg(PQUA.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
+
+
 ########Calculations for table #################
 #last 10 year trend
 PQUA10<-subset(PQUA_summary, year >= 2011)
@@ -1836,7 +1936,13 @@ stability_time(PQUA_summary[,c(1,6)])
 
 ddply(PQUA_summary, .(year), summarise,
       ADULTS = sum(ADULTS))
+out<-ddply(PQUA_summary, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
 
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
 
 ##########################################
 # make all native figure
@@ -1867,7 +1973,54 @@ native.year<-ggplot(data=native.pred, aes(year, fit))+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 native.year
 
+#######
+#by plant community or (or community group)
+nativetot.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                data=nativetot, family="quasipoisson")
+summary(nativetot.gam1)
 
+visreg(nativetot.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+nativetot.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                data=nativetot, family="quasipoisson")
+summary(nativetot.gam2)
+
+visreg(nativetot.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
+
+
+
+########Calculations for table #################
+#last 10 year trend
+native10<-subset(nativetot, year >= 2011)
+
+native10mod<-lm(pertrap~year, data=native10)
+
+summary(native10mod)
+
+#whole timeseries trend
+
+nativeallmod<-lm(pertrap~year, data=nativetot)
+
+summary(nativeallmod)
+
+#stability time
+
+stability_time(nativetot[,c(1,7)])
+
+#detection frequency in first five vs last five years
+
+
+out<-ddply(nativetot, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
 
 ##########################################
 # make all invasive figure
@@ -1898,6 +2051,56 @@ invasive.year<-ggplot(data=invasive.pred, aes(year, fit))+
 invasive.year
 
 
+
+#######
+#by plant community or (or community group)
+invasivetot.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                      data=invasivetot, family="quasipoisson")
+summary(invasivetot.gam1)
+
+visreg(invasivetot.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+invasivetot.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                      data=invasivetot, family="quasipoisson")
+summary(invasivetot.gam2)
+
+visreg(invasivetot.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
+
+
+
+########Calculations for table #################
+#last 10 year trend
+invasive10<-subset(invasivetot, year >= 2011)
+
+invasive10mod<-lm(pertrap~year, data=invasive10)
+
+summary(invasive10mod)
+
+#whole timeseries trend
+
+invasiveallmod<-lm(pertrap~year, data=invasivetot)
+
+summary(invasiveallmod)
+
+#stability time
+
+stability_time(invasivetot[,c(1,7)])
+
+#detection frequency in first five vs last five years
+
+
+out<-ddply(invasivetot, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
+
 ##########################################
 # make all all_ figure
 
@@ -1925,6 +2128,120 @@ all_year<-ggplot(data=all_pred, aes(year, fit))+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, NA))
 all_year
+
+
+#######
+#by plant community or (or community group)
+all_tot.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                  data=all_tot, family="quasipoisson")
+summary(all_tot.gam1)
+
+visreg(all_tot.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+all_tot.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                  data=all_tot, family="quasipoisson")
+summary(all_tot.gam2)
+
+visreg(all_tot.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
+
+
+
+########Calculations for table #################
+#last 10 year trend
+all_10<-subset(all_tot, year >= 2011)
+
+all_10mod<-lm(pertrap~year, data=all_10)
+
+summary(all_10mod)
+
+#whole timeseries trend
+
+all_allmod<-lm(pertrap~year, data=all_tot)
+
+summary(all_allmod)
+
+#stability time
+
+stability_time(all_tot[,c(1,7)])
+
+#detection frequency in first five vs last five years
+
+out<-ddply(all_tot, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+out
+
+sum(out$ADULTS)/sum(out$TRAPS)
+##########################################
+# make all predation potential figure
+
+
+
+pred_gam_plants<-gam(pred~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
+                     data=pred_tot, family="quasipoisson")
+summary(pred_gam_plants)
+
+visreg(pred_gam_plants, "year", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))
+
+
+
+#######
+#by plant community or (or community group)
+predtot.gam1<-gam(pred~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
+                  data=pred_tot, family="quasipoisson")
+summary(predtot.gam1)
+
+visreg(predtot.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_DESC, ncol = 4)
+
+predtot.gam2<-gam(pred~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+offset(log(TRAPS)),
+                  data=pred_tot, family="quasipoisson")
+summary(predtot.gam2)
+
+visreg(predtot.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+  scale_y_continuous(trans='pseudo_log')+
+  facet_wrap(~TREAT_CAT, ncol = 4)
+
+
+
+########Calculations for table #################
+#last 10 year trend
+pred10<-subset(pred_tot, year >= 2011)
+
+pred10mod<-lm(pertrap~year, data=pred10)
+
+summary(pred10mod)
+
+#whole timeseries trend
+
+predallmod<-lm(pertrap~year, data=pred_tot)
+
+summary(predallmod)
+
+#stability time
+
+stability_time(pred_tot[,c(1,7)])
+
+#detection frequency in first five vs last five years
+
+
+out<-ddply(pred_tot, .(year), summarise,
+           pred = sum(pred),
+           TRAPS=sum(TRAPS))
+
+out
+
+sum(out$pred)/sum(out$TRAPS)
+
+
+
 
 ########################################
 library(cowplot)

@@ -17,6 +17,8 @@ names(Forest)<-names(MCSE)
 
 all_lb<-rbind(MCSE, Forest)
 
+names(all_lb)<-toupper(names(all_lb)) #make column names consistent with previous formatting
+
 #Fit date format
 
 library(lubridate)
@@ -50,6 +52,7 @@ str(all_lb)
 
 
 
+
 #need to aggregate the data in a meaningful way by species
 
 ###########
@@ -57,8 +60,7 @@ str(all_lb)
 all_lb= subset(all_lb, DOY > 0 & DOY < 222)
 #subset the data to include  1993 or later, because sampling changed to add forests then
 all_lb= subset(all_lb, year >= 1993)
-#also, let's cut off the data at 2020, because we had to change traps in 2021, will explore in Manning study
-all_lb= subset(all_lb, year <= 2020)
+
 
 #let's start by making the individual data frames like we had before
 
@@ -90,11 +92,11 @@ PQUA<-all_lb1[which(all_lb$SPID=="PQUA"),]
 #PQUA
 
 #tell R where the data is by melting it, assigning IDs to the columns
-PQUA1<-melt(PQUA, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
-#cast the data to count up the fireflies
-PQUA2<-dcast(PQUA1, year+TREAT_DESC+REPLICATE~., sum)
+
+#cast the data to count up the bugs
+PQUA2<-dcast(PQUA, year+TREAT_DESC+REPLICATE~., value.var="ADULTS", sum)
 #cast the data to count the traps
-PQUA3<-dcast(PQUA1, year+TREAT_DESC+REPLICATE~., length)
+PQUA3<-dcast(PQUA, year+TREAT_DESC+REPLICATE~., value.var="ADULTS", length)
 #let's rename these new vectors within the data frame
 names(PQUA2)[4]<-"ADULTS"
 names(PQUA3)[4]<-"TRAPS"
@@ -133,18 +135,16 @@ PQUA_agg <- ddply(PQUA_summary, .(TREAT_CAT, year), summarise,
                   N = length(pertrap),
                   SE = sd.bugs.pt / sqrt(N))
 
-
 #####################################################################################
 
 #HVAR
 
 
-#tell R where the data is by melting it, assigning IDs to the columns
-HVAR1<-melt(HVAR, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
+
 #cast the data to count up the fireflies
-HVAR2<-dcast(HVAR1, year+TREAT_DESC+REPLICATE~., sum)
+HVAR2<-dcast(HVAR, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", sum)
 #cast the data to count the traps
-HVAR3<-dcast(HVAR1, year+TREAT_DESC+REPLICATE~., length)
+HVAR3<-dcast(HVAR, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", length)
 #let's rename these new vectors within the data frame
 names(HVAR2)[4]<-"ADULTS"
 names(HVAR3)[4]<-"TRAPS"
@@ -188,12 +188,11 @@ HVAR_agg <- ddply(HVAR_summary, .(TREAT_CAT, year), summarise,
 
 #HPARN
 
-#tell R where the data is by melting it, assigning IDs to the columns
-HPARN1<-melt(HPARN, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
+
 #cast the data to count up the fireflies
-HPARN2<-dcast(HPARN1, year+TREAT_DESC+REPLICATE~., sum)
+HPARN2<-dcast(HPARN, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", sum)
 #cast the data to count the traps
-HPARN3<-dcast(HPARN1, year+TREAT_DESC+REPLICATE~., length)
+HPARN3<-dcast(HPARN, year+TREAT_DESC+REPLICATE~., value.var="ADULTS",length)
 #let's rename these new vectors within the data frame
 names(HPARN2)[4]<-"ADULTS"
 names(HPARN3)[4]<-"TRAPS"
@@ -239,12 +238,11 @@ HPARN_agg <- ddply(HPARN_summary, .(TREAT_CAT, year), summarise,
 #HGLAC
 
 
-#tell R where the data is by melting it, assigning IDs to the columns
-HGLAC1<-melt(HGLAC, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
+
 #cast the data to count up the fireflies
-HGLAC2<-dcast(HGLAC1, year+TREAT_DESC+REPLICATE~., sum)
+HGLAC2<-dcast(HGLAC, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", sum)
 #cast the data to count the traps
-HGLAC3<-dcast(HGLAC1, year+TREAT_DESC+REPLICATE~., length)
+HGLAC3<-dcast(HGLAC, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", length)
 #let's rename these new vectors within the data frame
 names(HGLAC2)[4]<-"ADULTS"
 names(HGLAC3)[4]<-"TRAPS"
@@ -290,12 +288,11 @@ HGLAC_agg <- ddply(HGLAC_summary, .(TREAT_CAT, year), summarise,
 #HCONV
 
 
-#tell R where the data is by melting it, assigning IDs to the columns
-HCONV1<-melt(HCONV, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
+
 #cast the data to count up the fireflies
-HCONV2<-dcast(HCONV1, year+TREAT_DESC+REPLICATE~., sum)
+HCONV2<-dcast(HCONV, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", sum)
 #cast the data to count the traps
-HCONV3<-dcast(HCONV1, year+TREAT_DESC+REPLICATE~., length)
+HCONV3<-dcast(HCONV, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", length)
 #let's rename these new vectors within the data frame
 names(HCONV2)[4]<-"ADULTS"
 names(HCONV3)[4]<-"TRAPS"
@@ -341,12 +338,10 @@ HCONV_agg <- ddply(HCONV_summary, .(TREAT_CAT, year), summarise,
 #HAXY
 
 
-#tell R where the data is by melting it, assigning IDs to the columns
-HAXY1<-melt(HAXY, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
-HAXY2<-dcast(HAXY1, year+TREAT_DESC+REPLICATE~., sum)
+HAXY2<-dcast(HAXY, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", sum)
 #cast the data to count the traps
-HAXY3<-dcast(HAXY1, year+TREAT_DESC+REPLICATE~., length)
+HAXY3<-dcast(HAXY, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", length)
 #let's rename these new vectors within the data frame
 names(HAXY2)[4]<-"ADULTS"
 names(HAXY3)[4]<-"TRAPS"
@@ -389,12 +384,11 @@ HAXY_agg <- ddply(HAXY_summary, .(TREAT_CAT, year), summarise,
 
 #H13
 
-#tell R where the data is by melting it, assigning IDs to the columns
-H131<-melt(H13, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
+
 #cast the data to count up the fireflies
-H132<-dcast(H131, year+TREAT_DESC+REPLICATE~., sum)
+H132<-dcast(H13, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", sum)
 #cast the data to count the traps
-H133<-dcast(H131, year+TREAT_DESC+REPLICATE~., length)
+H133<-dcast(H13, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", length)
 #let's rename these new vectors within the data frame
 names(H132)[4]<-"ADULTS"
 names(H133)[4]<-"TRAPS"
@@ -437,12 +431,10 @@ H13_agg <- ddply(H13_summary, .(TREAT_CAT, year), summarise,
 #CYCSP
 
 
-#tell R where the data is by melting it, assigning IDs to the columns
-CYCSP1<-melt(CYCSP, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
-CYCSP2<-dcast(CYCSP1, year+TREAT_DESC+REPLICATE~., sum)
+CYCSP2<-dcast(CYCSP, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", sum)
 #cast the data to count the traps
-CYCSP3<-dcast(CYCSP1, year+TREAT_DESC+REPLICATE~., length)
+CYCSP3<-dcast(CYCSP, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", length)
 #let's rename these new vectors within the data frame
 names(CYCSP2)[4]<-"ADULTS"
 names(CYCSP3)[4]<-"TRAPS"
@@ -487,12 +479,11 @@ CYCSP_agg <- ddply(CYCSP_summary, .(TREAT_CAT, year), summarise,
 #CTRIF
 
 
-#tell R where the data is by melting it, assigning IDs to the columns
-CTRIF1<-melt(CTRIF, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
+
 #cast the data to count up the fireflies
-CTRIF2<-dcast(CTRIF1, year+TREAT_DESC+REPLICATE~., sum)
+CTRIF2<-dcast(CTRIF, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", sum)
 #cast the data to count the traps
-CTRIF3<-dcast(CTRIF1, year+TREAT_DESC+REPLICATE~., length)
+CTRIF3<-dcast(CTRIF, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", length)
 #let's rename these new vectors within the data frame
 names(CTRIF2)[4]<-"ADULTS"
 names(CTRIF3)[4]<-"TRAPS"
@@ -538,12 +529,10 @@ CTRIF_agg <- ddply(CTRIF_summary, .(TREAT_CAT, year), summarise,
 #CSTIG
 
 
-#tell R where the data is by melting it, assigning IDs to the columns
-CSTIG1<-melt(CSTIG, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
-CSTIG2<-dcast(CSTIG1, year+TREAT_DESC+REPLICATE~., sum)
+CSTIG2<-dcast(CSTIG, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", sum)
 #cast the data to count the traps
-CSTIG3<-dcast(CSTIG1, year+TREAT_DESC+REPLICATE~., length)
+CSTIG3<-dcast(CSTIG, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", length)
 #let's rename these new vectors within the data frame
 names(CSTIG2)[4]<-"ADULTS"
 names(CSTIG3)[4]<-"TRAPS"
@@ -571,7 +560,12 @@ CSTIG_summary$TREAT_CAT=ifelse(CSTIG_summary$TREAT_DESC=="Coniferous"|
                                                CSTIG_summary$TREAT_DESC=="Reduced input", "Annual", "Check")))
 
 
-
+# First make a dataframe for error bars
+CSTIG_agg <- ddply(CSTIG_summary, .(TREAT_CAT, year), summarise,
+                   mean.bugs = mean(pertrap),
+                   sd.bugs.pt = sd(pertrap),
+                   N = length(pertrap),
+                   SE = sd.bugs.pt / sqrt(N))
 
 
 
@@ -581,12 +575,11 @@ CSTIG_summary$TREAT_CAT=ifelse(CSTIG_summary$TREAT_DESC=="Coniferous"|
 
 
 
-#tell R where the data is by melting it, assigning IDs to the columns
-CMAC1<-melt(CMAC, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
+
 #cast the data to count up the fireflies
-CMAC2<-dcast(CMAC1, year+TREAT_DESC+REPLICATE~., sum)
+CMAC2<-dcast(CMAC, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", sum)
 #cast the data to count the traps
-CMAC3<-dcast(CMAC1, year+TREAT_DESC+REPLICATE~., length)
+CMAC3<-dcast(CMAC, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", length)
 #let's rename these new vectors within the data frame
 names(CMAC2)[4]<-"ADULTS"
 names(CMAC3)[4]<-"TRAPS"
@@ -634,12 +627,10 @@ CMAC_agg <- ddply(CMAC_summary, .(TREAT_CAT, year), summarise,
 #C7
 
 
-#tell R where the data is by melting it, assigning IDs to the columns
-C71<-melt(C7, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
 #cast the data to count up the fireflies
-C72<-dcast(C71, year+TREAT_DESC+REPLICATE~., sum)
+C72<-dcast(C7, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", sum)
 #cast the data to count the traps
-C73<-dcast(C71, year+TREAT_DESC+REPLICATE~., length)
+C73<-dcast(C7, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", length)
 #let's rename these new vectors within the data frame
 names(C72)[4]<-"ADULTS"
 names(C73)[4]<-"TRAPS"
@@ -682,12 +673,11 @@ C7_agg <- ddply(C7_summary, .(TREAT_CAT, year), summarise,
 #BURSI
 
 
-#tell R where the data is by melting it, assigning IDs to the columns
-BURSI1<-melt(BURSI, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
+
 #cast the data to count up the fireflies
-BURSI2<-dcast(BURSI1, year+TREAT_DESC+REPLICATE~., sum)
+BURSI2<-dcast(BURSI, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", sum)
 #cast the data to count the traps
-BURSI3<-dcast(BURSI1, year+TREAT_DESC+REPLICATE~., length)
+BURSI3<-dcast(BURSI, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", length)
 #let's rename these new vectors within the data frame
 names(BURSI2)[4]<-"ADULTS"
 names(BURSI3)[4]<-"TRAPS"
@@ -731,12 +721,11 @@ BURSI_agg <- ddply(BURSI_summary, .(TREAT_CAT, year), summarise,
 #ABIPN
 
 
-#tell R where the data is by melting it, assigning IDs to the columns
-ABIPN1<-melt(ABIPN, id=c("DATE","TREAT_DESC","HABITAT","REPLICATE","STATION","newdate", "year", "DOY"))
+
 #cast the data to count up the fireflies
-ABIPN2<-dcast(ABIPN1, year+TREAT_DESC+REPLICATE~., sum)
+ABIPN2<-dcast(ABIPN, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", sum)
 #cast the data to count the traps
-ABIPN3<-dcast(ABIPN1, year+TREAT_DESC+REPLICATE~., length)
+ABIPN3<-dcast(ABIPN, year+TREAT_DESC+REPLICATE~.,value.var="ADULTS", length)
 #let's rename these new vectors within the data frame
 names(ABIPN2)[4]<-"ADULTS"
 names(ABIPN3)[4]<-"TRAPS"
@@ -776,7 +765,7 @@ ABIPN_agg <- ddply(ABIPN_summary, .(TREAT_CAT, year), summarise,
 
 
 ######################################
-#get all this data into a single dataframe
+#get all this data back into a single dataframe
 
 #create weighted by predation potential variable- use values based on Bahlai et al 2013
 HAXY_summary$pred<-0.672*HAXY_summary$ADULTS
@@ -865,7 +854,7 @@ ABIPN.year<-ggplot(data=ABIPN.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.13, NA))
 ABIPN.year
@@ -891,7 +880,7 @@ visreg(ABIPN.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 ########Calculations for table #################
 #last 10 year trend
-ABIPN10<-subset(ABIPN_summary, year >= 2011)
+ABIPN10<-subset(ABIPN_summary, year >= 2013)
 
 abi10mod<-lm(pertrap~year, data=ABIPN10)
 
@@ -947,7 +936,7 @@ BURSI.year<-ggplot(data=BURSI.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 BURSI.year
@@ -972,7 +961,7 @@ visreg(BURSI.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 ########Calculations for table #################
 #last 10 year trend
-BURSI10<-subset(BURSI_summary, year >= 2011)
+BURSI10<-subset(BURSI_summary, year >= 2013)
 
 BURSI10mod<-lm(pertrap~year, data=BURSI10)
 
@@ -1028,7 +1017,7 @@ C7.year<-ggplot(data=C7.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 C7.year
@@ -1053,7 +1042,7 @@ visreg(C7.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 ########Calculations for table #################
 #last 10 year trend
-C710<-subset(C7_summary, year >= 2011)
+C710<-subset(C7_summary, year >= 2013)
 
 C710mod<-lm(pertrap~year, data=C710)
 
@@ -1108,7 +1097,7 @@ CMAC.year<-ggplot(data=CMAC.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CMAC.year
@@ -1133,7 +1122,7 @@ visreg(CMAC.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 ########Calculations for table #################
 #last 10 year trend
-CMAC10<-subset(CMAC_summary, year >= 2011)
+CMAC10<-subset(CMAC_summary, year >= 2013)
 
 CMAC10mod<-lm(pertrap~year, data=CMAC10)
 
@@ -1186,7 +1175,7 @@ CSTIG.year<-ggplot(data=CSTIG.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CSTIG.year
@@ -1211,7 +1200,7 @@ visreg(CSTIG.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 ########Calculations for table #################
 #last 10 year trend
-CSTIG10<-subset(CSTIG_summary, year >= 2011)
+CSTIG10<-subset(CSTIG_summary, year >= 2013)
 
 CSTIG10mod<-lm(pertrap~year, data=CSTIG10)
 
@@ -1265,7 +1254,7 @@ CTRIF.year<-ggplot(data=CTRIF.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CTRIF.year
@@ -1290,7 +1279,7 @@ visreg(CTRIF.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 ########Calculations for table #################
 #last 10 year trend
-CTRIF10<-subset(CTRIF_summary, year >= 2011)
+CTRIF10<-subset(CTRIF_summary, year >= 2013)
 
 CTRIF10mod<-lm(pertrap~year, data=CTRIF10)
 
@@ -1343,7 +1332,7 @@ CYCSP.year<-ggplot(data=CYCSP.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 CYCSP.year
@@ -1369,7 +1358,7 @@ visreg(CYCSP.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 ########Calculations for table #################
 #last 10 year trend
-CYCSP10<-subset(CYCSP_summary, year >= 2011)
+CYCSP10<-subset(CYCSP_summary, year >= 2013)
 
 CYCSP10mod<-lm(pertrap~year, data=CYCSP10)
 
@@ -1422,7 +1411,7 @@ H13.year<-ggplot(data=H13.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 H13.year
@@ -1447,7 +1436,7 @@ visreg(H13.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 ########Calculations for table #################
 #last 10 year trend
-H1310<-subset(H13_summary, year >= 2011)
+H1310<-subset(H13_summary, year >= 2013)
 
 H1310mod<-lm(pertrap~year, data=H1310)
 
@@ -1461,7 +1450,7 @@ summary(H13allmod)
 
 #stability time
 
-stability_time(H13_summary[,c(1,6)])
+#stability_time(H13_summary[,c(1,6)]) # not run- too many zeroes 
 
 #detection frequency in first five vs last five years
 
@@ -1500,7 +1489,7 @@ HAXY.year<-ggplot(data=HAXY.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HAXY.year
@@ -1526,7 +1515,7 @@ visreg(HAXY.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 ########Calculations for table #################
 #last 10 year trend
-HAXY10<-subset(HAXY_summary, year >= 2011)
+HAXY10<-subset(HAXY_summary, year >= 2013)
 
 HAXY10mod<-lm(pertrap~year, data=HAXY10)
 
@@ -1578,7 +1567,7 @@ HCONV.year<-ggplot(data=HCONV.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HCONV.year
@@ -1603,7 +1592,7 @@ visreg(HCONV.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 ########Calculations for table #################
 #last 10 year trend
-HCONV10<-subset(HCONV_summary, year >= 2011)
+HCONV10<-subset(HCONV_summary, year >= 2013)
 
 HCONV10mod<-lm(pertrap~year, data=HCONV10)
 
@@ -1617,7 +1606,7 @@ summary(HCONVallmod)
 
 #stability time
 
-stability_time(HCONV_summary[,c(1,6)])
+#stability_time(HCONV_summary[,c(1,6)])
 
 #detection frequency in first five vs last five years
 
@@ -1656,7 +1645,7 @@ HGLAC.year<-ggplot(data=HGLAC.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HGLAC.year
@@ -1681,7 +1670,7 @@ visreg(HGLAC.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 ########Calculations for table #################
 #last 10 year trend
-HGLAC10<-subset(HGLAC_summary, year >= 2011)
+HGLAC10<-subset(HGLAC_summary, year >= 2013)
 
 HGLAC10mod<-lm(pertrap~year, data=HGLAC10)
 
@@ -1733,7 +1722,7 @@ HPARN.year<-ggplot(data=HPARN.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HPARN.year
@@ -1758,7 +1747,7 @@ visreg(HPARN.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 ########Calculations for table #################
 #last 10 year trend
-HPARN10<-subset(HPARN_summary, year >= 2011)
+HPARN10<-subset(HPARN_summary, year >= 2013)
 
 HPARN10mod<-lm(pertrap~year, data=HPARN10)
 
@@ -1811,7 +1800,7 @@ HVAR.year<-ggplot(data=HVAR.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 HVAR.year
@@ -1836,7 +1825,7 @@ visreg(HVAR.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 ########Calculations for table #################
 #last 10 year trend
-HVAR10<-subset(HVAR_summary, year >= 2011)
+HVAR10<-subset(HVAR_summary, year >= 2013)
 
 HVAR10mod<-lm(pertrap~year, data=HVAR10)
 
@@ -1889,7 +1878,7 @@ PQUA.year<-ggplot(data=PQUA.pred, aes(year, fit))+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
     theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 PQUA.year
@@ -1915,7 +1904,7 @@ visreg(PQUA.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 ########Calculations for table #################
 #last 10 year trend
-PQUA10<-subset(PQUA_summary, year >= 2011)
+PQUA10<-subset(PQUA_summary, year >= 2013)
 
 PQUA10mod<-lm(pertrap~year, data=PQUA10)
 
@@ -1963,12 +1952,13 @@ native.pred$upper<-native.pred$fit+2*native.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 native.year<-ggplot(data=native.pred, aes(year, fit))+
+  geom_vline(xintercept=c(2000.5, 2005.5, 2015.5), colour="cornsilk4", linetype="longdash")+ 
   geom_point(data=native, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 native.year
@@ -1994,12 +1984,7 @@ visreg(nativetot.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 
 ########Calculations for table #################
-#last 10 year trend
-native10<-subset(nativetot, year >= 2011)
 
-native10mod<-lm(pertrap~year, data=native10)
-
-summary(native10mod)
 
 #whole timeseries trend
 
@@ -2007,9 +1992,15 @@ nativeallmod<-lm(pertrap~year, data=nativetot)
 
 summary(nativeallmod)
 
-#stability time
+nativestartall<-coef(nativeallmod)[1] + coef(nativeallmod)[2] * 1993
+nativemeanall<-sum(nativetot$ADULTS)/sum(nativetot$TRAPS)
 
-stability_time(nativetot[,c(1,7)])
+nativeall_perc_change<-100*nativeallmod$coefficients[2]
+
+nativeall_perc_change
+
+mean_textall <- round(nativeall_perc_change, 1)
+
 
 #detection frequency in first five vs last five years
 
@@ -2021,6 +2012,185 @@ out<-ddply(nativetot, .(year), summarise,
 out
 
 sum(out$ADULTS)/sum(out$TRAPS)
+
+#last 8 year trend
+native8<-subset(nativetot, year >= 2016)
+
+out<-ddply(native8, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+native8mod<-lm(pertrap~year, data=native8)
+
+summary(native8mod)
+
+nativestart8<-coef(native8mod)[1] + coef(native8mod)[2] * 2019
+nativemean8<-sum(out$ADULTS)/sum(out$TRAPS)
+
+native8_perc_change<-100*native8mod$coefficients[2]
+
+native8_perc_change
+
+######
+#4-phase analysis and figure
+
+#until 2000
+nativefirst<-subset(nativetot, year <= 2000)
+
+nativefirstmod<-lm(pertrap~year, data=nativefirst)
+
+summary(nativefirstmod)
+
+out<-ddply(nativefirst, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+nativefirstmean<-sum(out$ADULTS)/sum(out$TRAPS)
+
+nativefirststart<-coef(nativefirstmod)[1] + coef(nativefirstmod)[2] * 1993
+
+nativefirst_perc_change<-100*nativefirstmod$coefficients[2]
+mean_textfirst <- round(nativefirst_perc_change, 1)
+
+end_firstx <- 2000.5
+end_nativefirsty <- coef(nativefirstmod)[1] + coef(nativefirstmod)[2] * end_firstx
+
+
+
+# 2001-2005
+nativesecond<-subset(nativetot, year >= 2000 & year<=2005)
+
+nativesecondmod<-lm(pertrap~year, data=nativesecond)
+
+summary(nativesecondmod)
+
+out<-ddply(nativesecond, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+nativesecondmean<-sum(out$ADULTS)/sum(out$TRAPS)
+
+nativesecondstart<-coef(nativesecondmod)[1] + coef(nativesecondmod)[2] * 2001
+
+nativesecond_perc_change<-100*nativesecondmod$coefficients[2]
+mean_textsecond <- round(nativesecond_perc_change, 1)
+
+end_secondx <- 2005.5
+end_nativesecondy <- coef(nativesecondmod)[1] + coef(nativesecondmod)[2] * end_secondx
+
+
+# 2006-2015
+nativethird<-subset(nativetot, year >= 2006 & year<=2015)
+
+nativethirdmod<-lm(pertrap~year, data=nativethird)
+
+summary(nativethirdmod)
+
+out<-ddply(nativethird, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+nativethirdmean<-sum(out$ADULTS)/sum(out$TRAPS)
+
+nativethirdstart<-coef(nativethirdmod)[1] + coef(nativethirdmod)[2] * 2006
+
+nativethird_perc_change<-100*nativethirdmod$coefficients[2]
+mean_textthird <- round(nativethird_perc_change, 1)
+mean_textthird <-"0.0"
+
+end_thirdx <- 2015.5
+end_nativethirdy <- coef(nativethirdmod)[1] + coef(nativethirdmod)[2] * end_thirdx
+
+# 2016-2023
+nativefourth<-subset(nativetot, year >= 2016)
+
+nativefourthmod<-lm(pertrap~year, data=nativefourth)
+
+summary(nativefourthmod)
+
+out<-ddply(nativefourth, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+nativefourthmean<-sum(out$ADULTS)/sum(out$TRAPS)
+
+nativefourthstart<-coef(nativefourthmod)[1] + coef(nativefourthmod)[2] * 2016
+
+nativefourth_perc_change<-100*nativefourthmod$coefficients[2]
+mean_textfourth <- round(nativefourth_perc_change, 1)
+
+end_fourthx <- 2023
+end_nativefourthy <- coef(nativefourthmod)[1] + coef(nativefourthmod)[2] * end_fourthx
+
+
+native_trendplot<-ggplot(data=nativetot, aes(year, pertrap))+
+  geom_vline(xintercept=c(2000.5, 2005.5, 2015.5), colour="cornsilk4", linetype="longdash")+
+  #shaded rectangles at bottom
+  #2000 segment
+  annotate('rect', xmin=1993, ymin=0, xmax=2000.5, ymax=nativefirstmean, fill="paleturquoise", alpha=0.5)+
+  #2005 segment
+  annotate('rect', xmin=2000.5, ymin=0, xmax=2005.5, ymax=nativesecondmean, fill="paleturquoise", alpha=0.5)+
+  #2015 segment
+  annotate('rect', xmin=2005.5, ymin=0, xmax=2015.5, ymax=nativethirdmean, fill="paleturquoise", alpha=0.5)+
+  #2023 segment
+  annotate('rect', xmin=2015.5, ymin=0, xmax=2023, ymax=nativefourthmean, fill="paleturquoise", alpha=0.5)+
+  #then overall average line
+  #overall segment
+  annotate('segment', x=1993, y=nativemeanall, xend=2023, yend=nativemeanall, color="darkturquoise",
+           lty="twodash", size=1.5)+
+  
+  #then regression lines per segment
+  #2000 segment
+  annotate('segment', x = 1993, y = coef(nativefirstmod)[1] + coef(nativefirstmod)[2] * 1993, 
+           xend = end_firstx, yend = end_nativefirsty, color="black", lty="dashed") +
+  #2005 segment
+  annotate('segment', x = 2000.5, y = coef(nativesecondmod)[1] + coef(nativesecondmod)[2] * 2000.5, 
+           xend = end_secondx, yend = end_nativesecondy, color="grey", lty="dashed") +
+  #2015 segment
+  annotate('segment', x = 2005.5, y = coef(nativethirdmod)[1] + coef(nativethirdmod)[2] * 2005.5, 
+           xend = end_thirdx, yend = end_nativethirdy, color="grey", lty="dashed") +
+  #2023 segment
+  annotate('segment', x = 2015.5, y = coef(nativefourthmod)[1] + coef(nativefourthmod)[2] * 2015.5, 
+           xend = end_fourthx, yend = end_nativefourthy, color="black", lty="dashed") +
+  
+  #then overall regression
+  #overall segment
+  annotate('segment', x = 1993, y = coef(nativeallmod)[1] + coef(nativeallmod)[2] * 1993, 
+           xend = 2023, yend = coef(nativeallmod)[1] + coef(nativeallmod)[2] * 2023, color="black", size=2,lty="solid", ) +
+  
+  #then percent change annotation labels
+  #2000 segment
+  annotate('text', x = (1993 + 2000.5) / 2, y = 0.2*nativemeanall, 
+           label = mean_textfirst,
+           size = 5, 
+           color = "black") + 
+  #2005 segment
+  annotate('text', x = (2000.5+2005.5) / 2, y = 0.2*nativemeanall, 
+           label = mean_textsecond,
+           size = 5, 
+           color = "grey") +
+  #2015 segment
+  annotate('text', x = (2005.5+2015.5) / 2, y = 0.2*nativemeanall, 
+           label = mean_textthird,
+           size = 5, 
+           color = "grey") + 
+  #2023 segment
+  annotate('text', x = (2015.5+2023) / 2, y = 0.2*nativemeanall , 
+           label = mean_textfourth,
+           size = 5, 
+           color = "black") + 
+  #overall segment
+  annotate('text', x = 2010, y = 1.5*nativemeanall,
+           label = mean_textall,
+           size = 8, 
+           color = "black") + 
+  
+  theme_classic()+
+  xlim(1993, 2023)+
+  xlab(NULL)+ylab("")+
+  coord_cartesian(ylim=c(0, 2*nativemeanall), clip = "off")
+native_trendplot
+
 
 ##########################################
 # make all invasive figure
@@ -2041,11 +2211,12 @@ invasive.pred$upper<-invasive.pred$fit+2*invasive.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 invasive.year<-ggplot(data=invasive.pred, aes(year, fit))+
+  geom_vline(xintercept=c(2000.5, 2005.5, 2015.5), colour="cornsilk4", linetype="longdash")+ 
   geom_point(data=invasive, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
 invasive.year
@@ -2072,13 +2243,6 @@ visreg(invasivetot.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)
 
 
 
-########Calculations for table #################
-#last 10 year trend
-invasive10<-subset(invasivetot, year >= 2011)
-
-invasive10mod<-lm(pertrap~year, data=invasive10)
-
-summary(invasive10mod)
 
 #whole timeseries trend
 
@@ -2086,9 +2250,15 @@ invasiveallmod<-lm(pertrap~year, data=invasivetot)
 
 summary(invasiveallmod)
 
-#stability time
+invasivestartall<-coef(invasiveallmod)[1] + coef(invasiveallmod)[2] * 1993
+invasivemeanall<-sum(invasivetot$ADULTS)/sum(invasivetot$TRAPS)
 
-stability_time(invasivetot[,c(1,7)])
+invasiveall_perc_change<-100*invasiveallmod$coefficients[2]
+
+invasiveall_perc_change
+
+mean_textall <- round(invasiveall_perc_change, 1)
+
 
 #detection frequency in first five vs last five years
 
@@ -2100,6 +2270,188 @@ out<-ddply(invasivetot, .(year), summarise,
 out
 
 sum(out$ADULTS)/sum(out$TRAPS)
+
+#last 8 year trend
+invasive8<-subset(invasivetot, year >= 2016)
+
+out<-ddply(invasive8, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+invasive8mod<-lm(pertrap~year, data=invasive8)
+
+summary(invasive8mod)
+
+invasivestart8<-coef(invasive8mod)[1] + coef(invasive8mod)[2] * 2016
+invasivemean8<-sum(out$ADULTS)/sum(out$TRAPS)
+
+invasive8_perc_change<-100*invasive8mod$coefficients[2]
+
+invasive8_perc_change
+
+
+######
+#4-phase analysis and figure
+
+#until 2000
+invasivefirst<-subset(invasivetot, year <= 2000)
+
+invasivefirstmod<-lm(pertrap~year, data=invasivefirst)
+
+summary(invasivefirstmod)
+
+out<-ddply(invasivefirst, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+invasivefirstmean<-sum(out$ADULTS)/sum(out$TRAPS)
+
+invasivefirststart<-coef(invasivefirstmod)[1] + coef(invasivefirstmod)[2] * 1993
+
+invasivefirst_perc_change<-100*invasivefirstmod$coefficients[2]
+mean_textfirst <- round(invasivefirst_perc_change, 1)
+
+end_firstx <- 2000.5
+end_invasivefirsty <- coef(invasivefirstmod)[1] + coef(invasivefirstmod)[2] * end_firstx
+
+
+
+# 2001-2005
+invasivesecond<-subset(invasivetot, year >= 2000 & year<=2005)
+
+invasivesecondmod<-lm(pertrap~year, data=invasivesecond)
+
+summary(invasivesecondmod)
+
+out<-ddply(invasivesecond, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+invasivesecondmean<-sum(out$ADULTS)/sum(out$TRAPS)
+
+invasivesecondstart<-coef(invasivesecondmod)[1] + coef(invasivesecondmod)[2] * 2001
+
+invasivesecond_perc_change<-100*invasivesecondmod$coefficients[2]
+mean_textsecond <- round(invasivesecond_perc_change, 1)
+
+end_secondx <- 2005.5
+end_invasivesecondy <- coef(invasivesecondmod)[1] + coef(invasivesecondmod)[2] * end_secondx
+
+
+# 2006-2015
+invasivethird<-subset(invasivetot, year >= 2006 & year<=2015)
+
+invasivethirdmod<-lm(pertrap~year, data=invasivethird)
+
+summary(invasivethirdmod)
+
+out<-ddply(invasivethird, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+invasivethirdmean<-sum(out$ADULTS)/sum(out$TRAPS)
+
+invasivethirdstart<-coef(invasivethirdmod)[1] + coef(invasivethirdmod)[2] * 2006
+
+invasivethird_perc_change<-100*invasivethirdmod$coefficients[2]
+mean_textthird <- round(invasivethird_perc_change, 1)
+
+end_thirdx <- 2015.5
+end_invasivethirdy <- coef(invasivethirdmod)[1] + coef(invasivethirdmod)[2] * end_thirdx
+
+# 2016-2023
+invasivefourth<-subset(invasivetot, year >= 2016)
+
+invasivefourthmod<-lm(pertrap~year, data=invasivefourth)
+
+summary(invasivefourthmod)
+
+out<-ddply(invasivefourth, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+invasivefourthmean<-sum(out$ADULTS)/sum(out$TRAPS)
+
+invasivefourthstart<-coef(invasivefourthmod)[1] + coef(invasivefourthmod)[2] * 2016
+
+invasivefourth_perc_change<-100*invasivefourthmod$coefficients[2]
+mean_textfourth <- round(invasivefourth_perc_change, 1)
+
+end_fourthx <- 2023
+end_invasivefourthy <- coef(invasivefourthmod)[1] + coef(invasivefourthmod)[2] * end_fourthx
+
+
+invasive_trendplot<-ggplot(data=invasivetot, aes(year, pertrap))+
+  geom_vline(xintercept=c(2000.5, 2005.5, 2015.5), colour="cornsilk4", linetype="longdash")+
+  #shaded rectangles at bottom
+  #2000 segment
+  annotate('rect', xmin=1993, ymin=0, xmax=2000.5, ymax=invasivefirstmean, fill="salmon1", alpha=0.5)+
+  #2005 segment
+  annotate('rect', xmin=2000.5, ymin=0, xmax=2005.5, ymax=invasivesecondmean, fill="salmon1", alpha=0.5)+
+  #2015 segment
+  annotate('rect', xmin=2005.5, ymin=0, xmax=2015.5, ymax=invasivethirdmean, fill="salmon1", alpha=0.5)+
+  #2023 segment
+  annotate('rect', xmin=2015.5, ymin=0, xmax=2023, ymax=invasivefourthmean, fill="salmon1", alpha=0.5)+
+  #then overall average line
+  #overall segment
+  annotate('segment', x=1993, invasivemeanall, xend=2023, yend=invasivemeanall, color="coral3",
+           lty="twodash", size=1.5)+
+  
+  #then regression lines per segment
+  #2000 segment
+  annotate('segment', x = 1993, y = coef(invasivefirstmod)[1] + coef(invasivefirstmod)[2] * 1993, 
+           xend = end_firstx, yend = end_invasivefirsty, color="grey", lty="dashed") +
+  #2005 segment
+  annotate('segment', x = 2000.5, y = coef(invasivesecondmod)[1] + coef(invasivesecondmod)[2] * 2000.5, 
+           xend = end_secondx, yend = end_invasivesecondy, color="grey", lty="dashed") +
+  #2015 segment
+  annotate('segment', x = 2005.5, y = coef(invasivethirdmod)[1] + coef(invasivethirdmod)[2] * 2005.5, 
+           xend = end_thirdx, yend = end_invasivethirdy, color="black", lty="dashed") +
+  #2023 segment
+  annotate('segment', x = 2015.5, y = coef(invasivefourthmod)[1] + coef(invasivefourthmod)[2] * 2015.5, 
+           xend = end_fourthx, yend = end_invasivefourthy, color="black", lty="dashed") +
+  
+  #then overall regression
+  #overall segment
+  annotate('segment', x = 1993, y = coef(invasiveallmod)[1] + coef(invasiveallmod)[2] * 1993, 
+           xend = 2023, yend = coef(invasiveallmod)[1] + coef(invasiveallmod)[2] * 2023, color="black", size=2,lty="solid", ) +
+  
+  #then percent change annotation labels
+  #2000 segment
+  annotate('text', x = (1993 + 2000.5) / 2, y = 0.2*invasivemeanall, 
+           label = mean_textfirst,
+           size = 5, 
+           color = "grey") + 
+  #2005 segment
+  annotate('text', x = (2000.5+2005.5) / 2, y = 0.2*invasivemeanall, 
+           label = mean_textsecond,
+           size = 5, 
+           color = "grey") +
+  #2015 segment
+  annotate('text', x = (2005.5+2015.5) / 2, y =0.2*invasivemeanall, 
+           label = mean_textthird,
+           size = 5, 
+           color = "black") + 
+  #2023 segment
+  annotate('text', x = (2015.5+2023) / 2, y = 0.2*invasivemeanall , 
+           label = mean_textfourth,
+           size = 5, 
+           color = "black") + 
+  #overall segment
+  annotate('text', x = 2010, 1.5*invasivemeanall,
+           label = mean_textall,
+           size = 8, 
+           color = "black") + 
+  
+  theme_classic()+
+  xlim(1993, 2023)+
+  xlab(NULL)+ylab("")+
+  scale_y_continuous(limits=c(0, 2*invasivemeanall))
+invasive_trendplot
+
+
+
+
 
 ##########################################
 # make all all_ figure
@@ -2120,11 +2472,12 @@ all_pred$upper<-all_pred$fit+2*all_pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 all_year<-ggplot(data=all_pred, aes(year, fit))+
+  geom_vline(xintercept=c(2000.5, 2005.5, 2015.5), colour="cornsilk4", linetype="longdash")+
   geom_point(data=all_tot, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='grey', alpha=0.6)+
   geom_line()+
   theme_classic()+
-  xlim(1993, 2021)+
+  xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, NA))
 all_year
@@ -2151,12 +2504,6 @@ visreg(all_tot.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 
 ########Calculations for table #################
-#last 10 year trend
-all_10<-subset(all_tot, year >= 2011)
-
-all_10mod<-lm(pertrap~year, data=all_10)
-
-summary(all_10mod)
 
 #whole timeseries trend
 
@@ -2164,11 +2511,18 @@ all_allmod<-lm(pertrap~year, data=all_tot)
 
 summary(all_allmod)
 
-#stability time
+all_startall<-coef(all_allmod)[1] + coef(all_allmod)[2] * 1993
+all_meanall<-sum(all_tot$ADULTS)/sum(all_tot$TRAPS)
 
-stability_time(all_tot[,c(1,7)])
+all_all_perc_change<-100*all_allmod$coefficients[2]
+
+all_all_perc_change
+
+mean_textall <- round(all_all_perc_change, 1)
+
 
 #detection frequency in first five vs last five years
+
 
 out<-ddply(all_tot, .(year), summarise,
            ADULTS = sum(ADULTS),
@@ -2177,18 +2531,213 @@ out<-ddply(all_tot, .(year), summarise,
 out
 
 sum(out$ADULTS)/sum(out$TRAPS)
+
+#last 8 year trend
+all_8<-subset(all_tot, year >= 2016)
+
+out<-ddply(all_8, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+all_8mod<-lm(pertrap~year, data=all_8)
+
+summary(all_8mod)
+
+all_start8<-coef(all_8mod)[1] + coef(all_8mod)[2] * 2016
+all_mean8<-sum(out$ADULTS)/sum(out$TRAPS)
+
+all_8_perc_change<-100*all_8mod$coefficients[2]
+
+all_8_perc_change
+
+
+######
+#4-phase analysis and figure
+
+#until 2000
+all_first<-subset(all_tot, year <= 2000)
+
+all_firstmod<-lm(pertrap~year, data=all_first)
+
+summary(all_firstmod)
+
+out<-ddply(all_first, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+all_firstmean<-sum(out$ADULTS)/sum(out$TRAPS)
+
+all_firststart<-coef(all_firstmod)[1] + coef(all_firstmod)[2] * 1993
+
+all_first_perc_change<-100*all_firstmod$coefficients[2]
+mean_textfirst <- round(all_first_perc_change, 1)
+
+end_firstx <- 2000.5
+end_all_firsty <- coef(all_firstmod)[1] + coef(all_firstmod)[2] * end_firstx
+
+
+
+# 2001-2005
+all_second<-subset(all_tot, year >= 2000 & year<=2005)
+
+all_secondmod<-lm(pertrap~year, data=all_second)
+
+summary(all_secondmod)
+
+out<-ddply(all_second, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+all_secondmean<-sum(out$ADULTS)/sum(out$TRAPS)
+
+all_secondstart<-coef(all_secondmod)[1] + coef(all_secondmod)[2] * 2001
+
+all_second_perc_change<-100*all_secondmod$coefficients[2]
+mean_textsecond <- round(all_second_perc_change, 1)
+
+end_secondx <- 2005.5
+end_all_secondy <- coef(all_secondmod)[1] + coef(all_secondmod)[2] * end_secondx
+
+
+# 2006-2015
+all_third<-subset(all_tot, year >= 2006 & year<=2015)
+
+all_thirdmod<-lm(pertrap~year, data=all_third)
+
+summary(all_thirdmod)
+
+out<-ddply(all_third, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+all_thirdmean<-sum(out$ADULTS)/sum(out$TRAPS)
+
+all_thirdstart<-coef(all_thirdmod)[1] + coef(all_thirdmod)[2] * 2006
+
+all_third_perc_change<-100*all_thirdmod$coefficients[2]
+mean_textthird <- round(all_third_perc_change, 1)
+
+end_thirdx <- 2015.5
+end_all_thirdy <- coef(all_thirdmod)[1] + coef(all_thirdmod)[2] * end_thirdx
+
+# 2016-2023
+all_fourth<-subset(all_tot, year >= 2016)
+
+all_fourthmod<-lm(pertrap~year, data=all_fourth)
+
+summary(all_fourthmod)
+
+out<-ddply(all_fourth, .(year), summarise,
+           ADULTS = sum(ADULTS),
+           TRAPS=sum(TRAPS))
+
+all_fourthmean<-sum(out$ADULTS)/sum(out$TRAPS)
+
+all_fourthstart<-coef(all_fourthmod)[1] + coef(all_fourthmod)[2] * 2016
+
+all_fourth_perc_change<-100*all_fourthmod$coefficients[2]
+mean_textfourth <- round(all_fourth_perc_change, 1)
+
+end_fourthx <- 2023
+end_all_fourthy <- coef(all_fourthmod)[1] + coef(all_fourthmod)[2] * end_fourthx
+
+
+all__trendplot<-ggplot(data=all_tot, aes(year, pertrap))+
+  geom_vline(xintercept=c(2000.5, 2005.5, 2015.5), colour="cornsilk4", linetype="longdash")+
+  #shaded rectangles at bottom
+  #2000 segment
+  annotate('rect', xmin=1993, ymin=0, xmax=2000.5, ymax=all_firstmean, fill="lightgrey", alpha=0.5)+
+  #2005 segment
+  annotate('rect', xmin=2000.5, ymin=0, xmax=2005.5, ymax=all_secondmean, fill="lightgrey", alpha=0.5)+
+  #2015 segment
+  annotate('rect', xmin=2005.5, ymin=0, xmax=2015.5, ymax=all_thirdmean, fill="lightgrey", alpha=0.5)+
+  #2023 segment
+  annotate('rect', xmin=2015.5, ymin=0, xmax=2023, ymax=all_fourthmean, fill="lightgrey", alpha=0.5)+
+  #then overall average line
+  #overall segment
+  annotate('segment', x=1993, all_meanall, xend=2023, yend=all_meanall, color="darkgrey",
+           lty="twodash", size=1.5)+
+  
+  #then regression lines per segment
+  #2000 segment
+  annotate('segment', x = 1993, y = coef(all_firstmod)[1] + coef(all_firstmod)[2] * 1993, 
+           xend = end_firstx, yend = end_all_firsty, color="black", lty="dashed") +
+  #2005 segment
+  annotate('segment', x = 2000.5, y = coef(all_secondmod)[1] + coef(all_secondmod)[2] * 2000.5, 
+           xend = end_secondx, yend = end_all_secondy, color="grey", lty="dashed") +
+  #2015 segment
+  annotate('segment', x = 2005.5, y = coef(all_thirdmod)[1] + coef(all_thirdmod)[2] * 2005.5, 
+           xend = end_thirdx, yend = end_all_thirdy, color="black", lty="dashed") +
+  #2023 segment
+  annotate('segment', x = 2015.5, y = coef(all_fourthmod)[1] + coef(all_fourthmod)[2] * 2015.5, 
+           xend = end_fourthx, yend = end_all_fourthy, color="grey", lty="dashed") +
+  
+  #then overall regression
+  #overall segment
+  annotate('segment', x = 1993, y = coef(all_allmod)[1] + coef(all_allmod)[2] * 1993, 
+           xend = 2023, yend = coef(all_allmod)[1] + coef(all_allmod)[2] * 2023, color="black", size=2,lty="solid", ) +
+  
+  #then percent change annotation labels
+  #2000 segment
+  annotate('text', x = (1993 + 2000.5) / 2, y = 0.2*all_meanall, 
+           label = mean_textfirst,
+           size = 5, 
+           color = "black") + 
+  #2005 segment
+  annotate('text', x = (2000.5+2005.5) / 2, y = 0.2*all_meanall, 
+           label = mean_textsecond,
+           size = 5, 
+           color = "grey") +
+  #2015 segment
+  annotate('text', x = (2005.5+2015.5) / 2, y = 0.2*all_meanall, 
+           label = mean_textthird,
+           size = 5, 
+           color = "black") + 
+  #2023 segment
+  annotate('text', x = (2015.5+2023) / 2, y = 0.2*all_meanall, 
+           label = mean_textfourth,
+           size = 5, 
+           color = "grey") + 
+  #overall segment
+  annotate('text', x = 2010, y = 1.5*all_meanall,
+           label = mean_textall,
+           size = 8, 
+           color = "black") + 
+  
+  theme_classic()+
+  xlim(1993, 2023)+
+  xlab(NULL)+ylab("")+
+  scale_y_continuous(limits=c(0, 2*all_meanall))
+all__trendplot
+
 ##########################################
 # make all predation potential figure
 
+#get average number of traps per year per observation
+newd <- with(pred_tot,
+             data.frame(year = seq(min(year), max(year), length = 1000),
+                        TRAPS = 50))
+knots<-round(length(unique(pred_tot$year))/6) #only allow max of 1 knot every ~6 years
+pred_gam0<-gam(pred~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
+              data=pred_tot, family="quasipoisson")
+summary(pred_gam0)
+pred_pred<-predict.gam(pred_gam0, newd, se.fit = T, type="response")
+pred_pred<-cbind(newd,pred_pred)
+pred_pred$lower<-pred_pred$fit-2*pred_pred$se.fit
+pred_pred$upper<-pred_pred$fit+2*pred_pred$se.fit
 
+jitter<-position_jitter(width = 0.1, height = 0.02)
 
-pred_gam_plants<-gam(pred~s(year, sp=smooth.param, k=knots)+offset(log(TRAPS)),
-                     data=pred_tot, family="quasipoisson")
-summary(pred_gam_plants)
-
-visreg(pred_gam_plants, "year", ylab="residual captures", gg=TRUE)+
-  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))
-
+pred_year<-ggplot(data=pred_pred, aes(year, fit))+
+  geom_vline(xintercept=c(2000.5, 2005.5, 2015.5), colour="cornsilk4", linetype="longdash")+
+  geom_point(data=pred_tot, aes(year, pred), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_ribbon(aes(ymin=lower, ymax=upper), fill='blue', alpha=0.6)+
+  geom_line()+
+  theme_classic()+
+  xlim(1993, 2023)+
+  xlab(NULL)+ylab("")+
+  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, NA))
+pred_year
 
 
 #######
@@ -2212,34 +2761,210 @@ visreg(predtot.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
 
 
 ########Calculations for table #################
-#last 10 year trend
-pred10<-subset(pred_tot, year >= 2011)
-
-pred10mod<-lm(pertrap~year, data=pred10)
-
-summary(pred10mod)
-
 #whole timeseries trend
 
-predallmod<-lm(pertrap~year, data=pred_tot)
+pred_allmod<-lm(pertrap~year, data=pred_tot)
 
-summary(predallmod)
+summary(pred_allmod)
 
-#stability time
+pred_startall<-coef(pred_allmod)[1] + coef(pred_allmod)[2] * 1993
+pred_meanall<-sum(pred_tot$pred)/sum(pred_tot$TRAPS)
 
-stability_time(pred_tot[,c(1,7)])
+pred_all_perc_change<-100*pred_allmod$coefficients[2]
+
+pred_all_perc_change
+
+mean_textall <- round(pred_all_perc_change, 1)
+
 
 #detection frequency in first five vs last five years
 
 
 out<-ddply(pred_tot, .(year), summarise,
-           pred = sum(pred),
+           pred= sum(pred),
            TRAPS=sum(TRAPS))
 
 out
 
 sum(out$pred)/sum(out$TRAPS)
 
+#last 8 year trend
+pred_8<-subset(pred_tot, year >= 2016)
+
+out<-ddply(pred_8, .(year), summarise,
+           pred = sum(pred),
+           TRAPS=sum(TRAPS))
+
+pred_8mod<-lm(pertrap~year, data=pred_8)
+
+summary(pred_8mod)
+
+pred_start8<-coef(pred_8mod)[1] + coef(pred_8mod)[2] * 2016
+pred_mean8<-sum(out$pred)/sum(out$TRAPS)
+
+pred_8_perc_change<-100*pred_8mod$coefficients[2]
+
+pred_8_perc_change
+
+
+######
+#4-phase analysis and figure
+
+#until 2000
+pred_first<-subset(pred_tot, year <= 2000)
+
+pred_firstmod<-lm(pertrap~year, data=pred_first)
+
+summary(pred_firstmod)
+
+out<-ddply(pred_first, .(year), summarise,
+           pred = sum(pred),
+           TRAPS=sum(TRAPS))
+
+pred_firstmean<-sum(out$pred)/sum(out$TRAPS)
+
+pred_firststart<-coef(pred_firstmod)[1] + coef(pred_firstmod)[2] * 1993
+
+pred_first_perc_change<-100*pred_firstmod$coefficients[2]
+mean_textfirst <- round(pred_first_perc_change, 1)
+
+end_firstx <- 2000.5
+end_pred_firsty <- coef(pred_firstmod)[1] + coef(pred_firstmod)[2] * end_firstx
+
+
+
+# 2001-2005
+pred_second<-subset(pred_tot, year >= 2000 & year<=2005)
+
+pred_secondmod<-lm(pertrap~year, data=pred_second)
+
+summary(pred_secondmod)
+
+out<-ddply(pred_second, .(year), summarise,
+           pred = sum(pred),
+           TRAPS=sum(TRAPS))
+
+pred_secondmean<-sum(out$pred)/sum(out$TRAPS)
+
+pred_secondstart<-coef(pred_secondmod)[1] + coef(pred_secondmod)[2] * 2001
+
+pred_second_perc_change<-100*pred_secondmod$coefficients[2]
+mean_textsecond <- round(pred_second_perc_change, 1)
+
+end_secondx <- 2005.5
+end_pred_secondy <- coef(pred_secondmod)[1] + coef(pred_secondmod)[2] * end_secondx
+
+
+# 2006-2015
+pred_third<-subset(pred_tot, year >= 2006 & year<=2015)
+
+pred_thirdmod<-lm(pertrap~year, data=pred_third)
+
+summary(pred_thirdmod)
+
+out<-ddply(pred_third, .(year), summarise,
+           pred = sum(pred),
+           TRAPS=sum(TRAPS))
+
+pred_thirdmean<-sum(out$pred)/sum(out$TRAPS)
+
+pred_thirdstart<-coef(pred_thirdmod)[1] + coef(pred_thirdmod)[2] * 2006
+
+pred_third_perc_change<-100*pred_thirdmod$coefficients[2]
+mean_textthird <- round(pred_third_perc_change, 1)
+
+end_thirdx <- 2015.5
+end_pred_thirdy <- coef(pred_thirdmod)[1] + coef(pred_thirdmod)[2] * end_thirdx
+
+# 2016-2023
+pred_fourth<-subset(pred_tot, year >= 2016)
+
+pred_fourthmod<-lm(pertrap~year, data=pred_fourth)
+
+summary(pred_fourthmod)
+
+out<-ddply(pred_fourth, .(year), summarise,
+           pred = sum(pred),
+           TRAPS=sum(TRAPS))
+
+pred_fourthmean<-sum(out$pred)/sum(out$TRAPS)
+
+pred_fourthstart<-coef(pred_fourthmod)[1] + coef(pred_fourthmod)[2] * 2016
+
+pred_fourth_perc_change<-100*pred_fourthmod$coefficients[2]
+mean_textfourth <- round(pred_fourth_perc_change, 1)
+
+end_fourthx <- 2023
+end_pred_fourthy <- coef(pred_fourthmod)[1] + coef(pred_fourthmod)[2] * end_fourthx
+
+
+pred__trendplot<-ggplot(data=pred_tot, aes(year, pertrap))+
+  geom_vline(xintercept=c(2000.5, 2005.5, 2015.5), colour="cornsilk4", linetype="longdash")+
+  #shaded rectangles at bottom
+  #2000 segment
+  annotate('rect', xmin=1993, ymin=0, xmax=2000.5, ymax=pred_firstmean, fill="blue", alpha=0.5)+
+  #2005 segment
+  annotate('rect', xmin=2000.5, ymin=0, xmax=2005.5, ymax=pred_secondmean, fill="blue", alpha=0.5)+
+  #2015 segment
+  annotate('rect', xmin=2005.5, ymin=0, xmax=2015.5, ymax=pred_thirdmean, fill="blue", alpha=0.5)+
+  #2023 segment
+  annotate('rect', xmin=2015.5, ymin=0, xmax=2023, ymax=pred_fourthmean, fill="blue", alpha=0.5)+
+  #then overall average line
+  #overall segment
+  annotate('segment', x=1993, pred_meanall, xend=2023, yend=pred_meanall, color="darkblue",
+           lty="twodash", size=1.5)+
+  
+  #then regression lines per segment
+  #2000 segment
+  annotate('segment', x = 1993, y = coef(pred_firstmod)[1] + coef(pred_firstmod)[2] * 1993, 
+           xend = end_firstx, yend = end_pred_firsty, color="black", lty="dashed") +
+  #2005 segment
+  annotate('segment', x = 2000.5, y = coef(pred_secondmod)[1] + coef(pred_secondmod)[2] * 2000.5, 
+           xend = end_secondx, yend = end_pred_secondy, color="grey", lty="dashed") +
+  #2015 segment
+  annotate('segment', x = 2005.5, y = coef(pred_thirdmod)[1] + coef(pred_thirdmod)[2] * 2005.5, 
+           xend = end_thirdx, yend = end_pred_thirdy, color="black", lty="dashed") +
+  #2023 segment
+  annotate('segment', x = 2015.5, y = coef(pred_fourthmod)[1] + coef(pred_fourthmod)[2] * 2015.5, 
+           xend = end_fourthx, yend = end_pred_fourthy, color="black", lty="dashed") +
+  
+  #then overall regression
+  #overall segment
+  annotate('segment', x = 1993, y = coef(pred_allmod)[1] + coef(pred_allmod)[2] * 1993, 
+           xend = 2023, yend = coef(pred_allmod)[1] + coef(pred_allmod)[2] * 2023, color="black", size=2,lty="solid", ) +
+  
+  #then percent change annotation labels
+  #2000 segment
+  annotate('text', x = (1993 + 2000.5) / 2, y = 0.2*pred_meanall, 
+           label = mean_textfirst,
+           size = 5, 
+           color = "black") + 
+  #2005 segment
+  annotate('text', x = (2000.5+2005.5) / 2, y = 0.2*pred_meanall, 
+           label = mean_textsecond,
+           size = 5, 
+           color = "grey") +
+  #2015 segment
+  annotate('text', x = (2005.5+2015.5) / 2, y = 0.2*pred_meanall, 
+           label = mean_textthird,
+           size = 5, 
+           color = "black") + 
+  #2023 segment
+  annotate('text', x = (2015.5+2023) / 2, y = 0.2*pred_meanall , 
+           label = mean_textfourth,
+           size = 5, 
+           color = "black") + 
+  #overall segment
+  annotate('text', x = 2010, y = 1.5*pred_meanall,
+           label = mean_textall,
+           size = 8, 
+           color = "black") + 
+  
+  theme_classic()+
+  xlim(1993, 2023)+
+  xlab(NULL)+ylab("")+
+  scale_y_continuous(limits=c(0, 2*pred_meanall))
+pred__trendplot
 
 
 
@@ -2258,12 +2983,33 @@ pdf("plots/timeseries_stack.pdf", height=12, width=6)
 grid.draw(timeseries.stack)
 dev.off()
 
-timeseries.grouped<-plot_grid(native.year, invasive.year, all_year, 
-                            ncol=1, rel_widths=c(1), labels=c('A', 'B', 'C'), align="v")
+timeseries.grouped<-plot_grid(native.year, invasive.year, all_year, pred_year, 
+                            ncol=1, rel_widths=c(1), labels=c('A', 'B', 'C', 'D'), align="v")
 timeseries.grouped
 
-pdf("plots/timeseries_grouped.pdf", height=8, width=6)
+pdf("plots/timeseries_grouped.pdf", height=10, width=6)
 grid.draw(timeseries.grouped)
+dev.off()
+
+
+trendplot.grouped<-plot_grid(native_trendplot, invasive_trendplot, all__trendplot, pred__trendplot, 
+                              ncol=1, rel_widths=c(1), labels=c('A', 'B', 'C', 'D'), align="v")
+trendplot.grouped
+
+pdf("plots/trendplot_grouped.pdf", height=10, width=6)
+grid.draw(trendplot.grouped)
+dev.off()
+
+
+series_and_trend_grouped<-plot_grid(native.year, native_trendplot, invasive.year, invasive_trendplot, 
+                                    all_year,all__trendplot, pred_year, pred__trendplot, 
+                                    ncol=2, rel_widths=c(1,1), labels=c('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'),
+                                    align="v")
+
+series_and_trend_grouped
+
+pdf("plots/series_and_trend_grouped.pdf", height=10, width=10)
+grid.draw(series_and_trend_grouped)
 dev.off()
 
 #####################
@@ -2348,6 +3094,14 @@ visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
+allplot<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures",
+                 gg=TRUE, jitter=F, line=list(col="black"), partial=FALSE, rug=FALSE, 
+                 fill=list(fill="lightgrey", col="lightgrey"),
+                 points=NULL)+
+  scale_y_continuous()+
+  facet_wrap(~TREAT_CAT, ncol = 4)+theme_bw()
+allplot
+
 
 allplot1<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="relative index of abundance",
                     gg=TRUE, overlay=T, jitter=F, partial=FALSE, rug=FALSE, 
@@ -2385,11 +3139,11 @@ predplot
 
 #create the by plant community figures
 
-by.community<-plot_grid(nativeplot, invasiveplot, predplot,
-                              ncol=1, rel_widths=c(1), labels=c('A', 'B', 'C'), align="v")
+by.community<-plot_grid(nativeplot, invasiveplot, allplot, predplot,
+                              ncol=1, rel_widths=c(1), labels=c('A', 'B', 'C', 'D'), align="v")
 by.community
 
-pdf("plots/timeseries_by_community.pdf", height=6, width=8)
+pdf("plots/timeseries_by_community.pdf", height=7, width=8)
 grid.draw(by.community)
 dev.off()
 

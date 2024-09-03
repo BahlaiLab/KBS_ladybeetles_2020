@@ -1960,7 +1960,7 @@ native.year<-ggplot(data=native.pred, aes(year, fit))+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
+  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, 200))
 native.year
 
 #######
@@ -2137,7 +2137,7 @@ native_trendplot<-ggplot(data=nativetot, aes(year, pertrap))+
   #then overall average line
   #overall segment
   annotate('segment', x=1993, y=nativemeanall, xend=2023, yend=nativemeanall, color="darkturquoise",
-           lty="twodash", size=1.5)+
+           lty="twodash", size=1)+
   
   #then regression lines per segment
   #2000 segment
@@ -2156,31 +2156,31 @@ native_trendplot<-ggplot(data=nativetot, aes(year, pertrap))+
   #then overall regression
   #overall segment
   annotate('segment', x = 1993, y = coef(nativeallmod)[1] + coef(nativeallmod)[2] * 1993, 
-           xend = 2023, yend = coef(nativeallmod)[1] + coef(nativeallmod)[2] * 2023, color="black", size=2,lty="solid", ) +
+           xend = 2023, yend = coef(nativeallmod)[1] + coef(nativeallmod)[2] * 2023, color="black", lty="solid", ) +
   
   #then percent change annotation labels
   #2000 segment
-  annotate('text', x = (1993 + 2000.5) / 2, y = 0.2*nativemeanall, 
+  annotate('text', x = (1993 + 2000.5) / 2, y = 0.5, 
            label = mean_textfirst,
            size = 5, 
            color = "black") + 
   #2005 segment
-  annotate('text', x = (2000.5+2005.5) / 2, y = 0.2*nativemeanall, 
+  annotate('text', x = (2000.5+2005.5) / 2, y = 0.5, 
            label = mean_textsecond,
            size = 5, 
            color = "grey") +
   #2015 segment
-  annotate('text', x = (2005.5+2015.5) / 2, y = 0.2*nativemeanall, 
+  annotate('text', x = (2005.5+2015.5) / 2, y = 0.5, 
            label = mean_textthird,
            size = 5, 
            color = "grey") + 
   #2023 segment
-  annotate('text', x = (2015.5+2023) / 2, y = 0.2*nativemeanall , 
+  annotate('text', x = (2015.5+2023) / 2, y = 0.5, 
            label = mean_textfourth,
            size = 5, 
            color = "black") + 
   #overall segment
-  annotate('text', x = 2010, y = 1.5*nativemeanall,
+  annotate('text', x = 2010, y = 0.75,
            label = mean_textall,
            size = 8, 
            color = "black") + 
@@ -2188,7 +2188,7 @@ native_trendplot<-ggplot(data=nativetot, aes(year, pertrap))+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  coord_cartesian(ylim=c(0, 2*nativemeanall), clip = "off")
+  coord_cartesian(ylim=c(0, 1), clip = "off")
 native_trendplot
 
 
@@ -2218,7 +2218,7 @@ invasive.year<-ggplot(data=invasive.pred, aes(year, fit))+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
+  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, 200))
 invasive.year
 
 
@@ -2395,7 +2395,7 @@ invasive_trendplot<-ggplot(data=invasivetot, aes(year, pertrap))+
   #then overall average line
   #overall segment
   annotate('segment', x=1993, invasivemeanall, xend=2023, yend=invasivemeanall, color="coral3",
-           lty="twodash", size=1.5)+
+           lty="twodash", size=1)+
   
   #then regression lines per segment
   #2000 segment
@@ -2414,7 +2414,7 @@ invasive_trendplot<-ggplot(data=invasivetot, aes(year, pertrap))+
   #then overall regression
   #overall segment
   annotate('segment', x = 1993, y = coef(invasiveallmod)[1] + coef(invasiveallmod)[2] * 1993, 
-           xend = 2023, yend = coef(invasiveallmod)[1] + coef(invasiveallmod)[2] * 2023, color="black", size=2,lty="solid", ) +
+           xend = 2023, yend = coef(invasiveallmod)[1] + coef(invasiveallmod)[2] * 2023, color="black",lty="solid", ) +
   
   #then percent change annotation labels
   #2000 segment
@@ -2446,7 +2446,7 @@ invasive_trendplot<-ggplot(data=invasivetot, aes(year, pertrap))+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(limits=c(0, 2*invasivemeanall))
+  coord_cartesian(ylim=c(0, 1), clip = "off")
 invasive_trendplot
 
 
@@ -2479,7 +2479,7 @@ all_year<-ggplot(data=all_pred, aes(year, fit))+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, NA))
+  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 200))
 all_year
 
 
@@ -2656,7 +2656,7 @@ all__trendplot<-ggplot(data=all_tot, aes(year, pertrap))+
   #then overall average line
   #overall segment
   annotate('segment', x=1993, all_meanall, xend=2023, yend=all_meanall, color="darkgrey",
-           lty="twodash", size=1.5)+
+           lty="twodash", size=1)+
   
   #then regression lines per segment
   #2000 segment
@@ -2675,7 +2675,7 @@ all__trendplot<-ggplot(data=all_tot, aes(year, pertrap))+
   #then overall regression
   #overall segment
   annotate('segment', x = 1993, y = coef(all_allmod)[1] + coef(all_allmod)[2] * 1993, 
-           xend = 2023, yend = coef(all_allmod)[1] + coef(all_allmod)[2] * 2023, color="black", size=2,lty="solid", ) +
+           xend = 2023, yend = coef(all_allmod)[1] + coef(all_allmod)[2] * 2023, color="black",lty="solid", ) +
   
   #then percent change annotation labels
   #2000 segment
@@ -2707,7 +2707,7 @@ all__trendplot<-ggplot(data=all_tot, aes(year, pertrap))+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(limits=c(0, 2*all_meanall))
+  coord_cartesian(ylim=c(0, 1), clip = "off")
 all__trendplot
 
 ##########################################
@@ -2736,7 +2736,7 @@ pred_year<-ggplot(data=pred_pred, aes(year, fit))+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, NA))
+  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 200))
 pred_year
 
 
@@ -2912,7 +2912,7 @@ pred__trendplot<-ggplot(data=pred_tot, aes(year, pertrap))+
   #then overall average line
   #overall segment
   annotate('segment', x=1993, pred_meanall, xend=2023, yend=pred_meanall, color="darkblue",
-           lty="twodash", size=1.5)+
+           lty="twodash", size=1)+
   
   #then regression lines per segment
   #2000 segment
@@ -2931,7 +2931,7 @@ pred__trendplot<-ggplot(data=pred_tot, aes(year, pertrap))+
   #then overall regression
   #overall segment
   annotate('segment', x = 1993, y = coef(pred_allmod)[1] + coef(pred_allmod)[2] * 1993, 
-           xend = 2023, yend = coef(pred_allmod)[1] + coef(pred_allmod)[2] * 2023, color="black", size=2,lty="solid", ) +
+           xend = 2023, yend = coef(pred_allmod)[1] + coef(pred_allmod)[2] * 2023, color="black",lty="solid", ) +
   
   #then percent change annotation labels
   #2000 segment
@@ -2963,7 +2963,7 @@ pred__trendplot<-ggplot(data=pred_tot, aes(year, pertrap))+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(limits=c(0, 2*pred_meanall))
+  coord_cartesian(ylim=c(0, 1), clip = "off")
 pred__trendplot
 
 
@@ -2971,10 +2971,9 @@ pred__trendplot
 ########################################
 library(cowplot)
 
-timeseries.stack<-plot_grid(ABIPN.year, BURSI.year, C7.year, CMAC.year,
-                            CSTIG.year, CTRIF.year, CYCSP.year, H13.year,
-                            HAXY.year,HCONV.year, HGLAC.year,HPARN.year,
-                            HVAR.year,PQUA.year, 
+timeseries.stack<-plot_grid(C7.year,HAXY.year,PQUA.year, HVAR.year,
+                            CMAC.year,CYCSP.year,HPARN.year,BURSI.year, CSTIG.year,HGLAC.year,HCONV.year,
+                            ABIPN.year, CTRIF.year,  H13.year,
                             ncol=2, rel_widths=c(1, 1), labels=c('A', 'B', 'C','D', 'E', 'F',
                                                                  'G', 'H', 'I', 'J','K', 'L','M','N'), align="v")
 timeseries.stack

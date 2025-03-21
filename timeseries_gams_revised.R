@@ -822,6 +822,8 @@ library(visreg)
 library(ggplot2)
 library(tidymv)
 library(grid)
+library(ggbreak)
+library(patchwork)
 
 source("broken_window_script.R")
 
@@ -850,13 +852,18 @@ ABIPN.pred$upper<-ABIPN.pred$fit+2*ABIPN.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 ABIPN.year<-ggplot(data=ABIPN.pred, aes(year, fit))+
-  geom_point(data=ABIPN_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=ABIPN_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.13, NA))
+  scale_y_continuous(limits=c(-0.1, 5*mean(ABIPN_summary$ADULTS)+4))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(ABIPN_summary$ADULTS)+4), ymax = 1.05*(5*mean(ABIPN_summary$ADULTS)+4)) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 0.95*(5*mean(ABIPN_summary$ADULTS)+4), label = "Adalia bipunctata", color = "black", size = 4, fontface = "italic", family="sans")
+
 ABIPN.year
 
 #######
@@ -865,7 +872,7 @@ ABIPN.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(l
                 data=ABIPN_summary, family="quasipoisson")
 summary(ABIPN.gam1)
 
-visreg(ABIPN.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(ABIPN.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -873,7 +880,7 @@ ABIPN.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT)
                 data=ABIPN_summary, family="quasipoisson")
 summary(ABIPN.gam2)
 
-visreg(ABIPN.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(ABIPN.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -932,13 +939,18 @@ BURSI.pred$upper<-BURSI.pred$fit+2*BURSI.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 BURSI.year<-ggplot(data=BURSI.pred, aes(year, fit))+
-  geom_point(data=BURSI_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=BURSI_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
+  scale_y_continuous(limits=c(-0.1, 5*mean(BURSI_summary$ADULTS)+4))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(BURSI_summary$ADULTS)+4), ymax = 1.05*(5*mean(BURSI_summary$ADULTS)+4)) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 0.95*(5*mean(BURSI_summary$ADULTS)+4), label = "Brachiacantha ursina", color = "black", size = 4, fontface = "italic", family="sans")
+
 BURSI.year
 
 #######
@@ -947,7 +959,7 @@ BURSI.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(l
                 data=BURSI_summary, family="quasipoisson")
 summary(BURSI.gam1)
 
-visreg(BURSI.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(BURSI.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -955,7 +967,7 @@ BURSI.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT)
                 data=BURSI_summary, family="quasipoisson")
 summary(BURSI.gam2)
 
-visreg(BURSI.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(BURSI.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -1013,13 +1025,19 @@ C7.pred$upper<-C7.pred$fit+2*C7.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 C7.year<-ggplot(data=C7.pred, aes(year, fit))+
-  geom_point(data=C7_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=C7_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
+  scale_y_continuous(limits=c(-0.1, 5*mean(C7_summary$ADULTS)+4))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(C7_summary$ADULTS)+4), ymax = 1.05*(5*mean(C7_summary$ADULTS)+4)) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 0.95*(5*mean(C7_summary$ADULTS)+4), label = "Coccinella septempunctata", color = "black", size = 4, fontface = "italic", family="sans")
+
+
 C7.year
 
 #######
@@ -1028,7 +1046,7 @@ C7.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(
                 data=C7_summary, family="quasipoisson")
 summary(C7.gam1)
 
-visreg(C7.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(C7.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -1036,7 +1054,7 @@ C7.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+o
                 data=C7_summary, family="quasipoisson")
 summary(C7.gam2)
 
-visreg(C7.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(C7.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -1093,13 +1111,18 @@ CMAC.pred$upper<-CMAC.pred$fit+2*CMAC.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 CMAC.year<-ggplot(data=CMAC.pred, aes(year, fit))+
-  geom_point(data=CMAC_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=CMAC_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
+  scale_y_continuous(limits=c(-0.1, 5*mean(CMAC_summary$ADULTS)+4))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(CMAC_summary$ADULTS)+4), ymax = 1.05*(5*mean(CMAC_summary$ADULTS)+4)) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 0.95*(5*mean(CMAC_summary$ADULTS)+4), label = "Coleomegilla maculata", color = "black", size = 4, fontface = "italic", family="sans")
+
 CMAC.year
 
 #######
@@ -1108,7 +1131,7 @@ CMAC.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(lo
              data=CMAC_summary, family="quasipoisson")
 summary(CMAC.gam1)
 
-visreg(CMAC.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(CMAC.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -1116,7 +1139,7 @@ CMAC.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))
              data=CMAC_summary, family="quasipoisson")
 summary(CMAC.gam2)
 
-visreg(CMAC.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(CMAC.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -1171,13 +1194,18 @@ CSTIG.pred$upper<-CSTIG.pred$fit+2*CSTIG.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 CSTIG.year<-ggplot(data=CSTIG.pred, aes(year, fit))+
-  geom_point(data=CSTIG_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=CSTIG_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
+  scale_y_continuous(limits=c(-0.1, 5*mean(CSTIG_summary$ADULTS)+4), breaks = seq(0, 5*mean(CSTIG_summary$ADULTS)+4, by = 1))+
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(CSTIG_summary$ADULTS)+4), ymax = 1.05*(5*mean(CSTIG_summary$ADULTS)+4)) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 0.95*(5*mean(CSTIG_summary$ADULTS)+4), label = "Chilochorus stigma", color = "black", size = 4, fontface = "italic", family="sans")
+
 CSTIG.year
 
 #######
@@ -1186,7 +1214,7 @@ CSTIG.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(l
                data=CSTIG_summary, family="quasipoisson")
 summary(CSTIG.gam1)
 
-visreg(CSTIG.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(CSTIG.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -1194,7 +1222,7 @@ CSTIG.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT)
                data=CSTIG_summary, family="quasipoisson")
 summary(CSTIG.gam2)
 
-visreg(CSTIG.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(CSTIG.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -1250,13 +1278,18 @@ CTRIF.pred$upper<-CTRIF.pred$fit+2*CTRIF.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 CTRIF.year<-ggplot(data=CTRIF.pred, aes(year, fit))+
-  geom_point(data=CTRIF_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=CTRIF_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
+  scale_y_continuous(limits=c(-0.1, 5*mean(CTRIF_summary$ADULTS)+4))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(CTRIF_summary$ADULTS)+4), ymax = 1.05*(5*mean(CTRIF_summary$ADULTS)+4)) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 0.95*(5*mean(CTRIF_summary$ADULTS)+4), label = "Coccinella trifasciata", color = "black", size = 4, fontface = "italic", family="sans")
+
 CTRIF.year
 
 #######
@@ -1265,7 +1298,7 @@ CTRIF.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(l
                 data=CTRIF_summary, family="quasipoisson")
 summary(CTRIF.gam1)
 
-visreg(CTRIF.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(CTRIF.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -1273,7 +1306,7 @@ CTRIF.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT)
                 data=CTRIF_summary, family="quasipoisson")
 summary(CTRIF.gam2)
 
-visreg(CTRIF.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(CTRIF.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -1328,13 +1361,18 @@ CYCSP.pred$upper<-CYCSP.pred$fit+2*CYCSP.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 CYCSP.year<-ggplot(data=CYCSP.pred, aes(year, fit))+
-  geom_point(data=CYCSP_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=CYCSP_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
+  scale_y_continuous(limits=c(-0.1, 5*mean(CYCSP_summary$ADULTS)+4), breaks = seq(0, 5*mean(CYCSP_summary$ADULTS)+4, by = 2))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(CYCSP_summary$ADULTS)+4), ymax = 1.05*(5*mean(CYCSP_summary$ADULTS)+4)) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 0.95*(5*mean(CYCSP_summary$ADULTS)+4), label = "Cycloneda munda", color = "black", size = 4, fontface = "italic", family="sans")
+
 CYCSP.year
 
 #######
@@ -1343,7 +1381,7 @@ CYCSP.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(l
                 data=CYCSP_summary, family="quasipoisson")
 summary(CYCSP.gam1)
 
-visreg(CYCSP.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(CYCSP.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -1351,7 +1389,7 @@ CYCSP.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT)
                 data=CYCSP_summary, family="quasipoisson")
 summary(CYCSP.gam2)
 
-visreg(CYCSP.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(CYCSP.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -1407,13 +1445,18 @@ H13.pred$upper<-H13.pred$fit+2*H13.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 H13.year<-ggplot(data=H13.pred, aes(year, fit))+
-  geom_point(data=H13_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=H13_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
+  scale_y_continuous(limits=c(-0.1, 5*mean(H13_summary$ADULTS)+4))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(H13_summary$ADULTS)+4), ymax = 1.05*(5*mean(H13_summary$ADULTS)+4)) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 0.95*(5*mean(H13_summary$ADULTS)+4), label = "Hippodamia tredecimpunctata", color = "black", size = 4, fontface = "italic", family="sans")
+
 H13.year
 
 #######
@@ -1422,7 +1465,7 @@ H13.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log
                 data=H13_summary, family="quasipoisson")
 summary(H13.gam1)
 
-visreg(H13.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(H13.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -1430,7 +1473,7 @@ H13.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))+
                 data=H13_summary, family="quasipoisson")
 summary(H13.gam2)
 
-visreg(H13.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(H13.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -1485,13 +1528,18 @@ HAXY.pred$upper<-HAXY.pred$fit+2*HAXY.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 HAXY.year<-ggplot(data=HAXY.pred, aes(year, fit))+
-  geom_point(data=HAXY_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=HAXY_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
+  scale_y_continuous(limits=c(-0.1, 5*mean(HAXY_summary$ADULTS)+4))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(HAXY_summary$ADULTS)+4), ymax = 1.05*(5*mean(HAXY_summary$ADULTS)+4)) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 0.95*(5*mean(HAXY_summary$ADULTS)+4), label = "Harmonia axyridis", color = "black", size = 4, fontface = "italic", family="sans")
+
 HAXY.year
 
 
@@ -1501,7 +1549,7 @@ HAXY.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(lo
               data=HAXY_summary, family="quasipoisson")
 summary(HAXY.gam1)
 
-visreg(HAXY.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(HAXY.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -1509,7 +1557,7 @@ HAXY.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))
               data=HAXY_summary, family="quasipoisson")
 summary(HAXY.gam2)
 
-visreg(HAXY.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(HAXY.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -1563,13 +1611,18 @@ HCONV.pred$upper<-HCONV.pred$fit+2*HCONV.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 HCONV.year<-ggplot(data=HCONV.pred, aes(year, fit))+
-  geom_point(data=HCONV_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=HCONV_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
+  scale_y_continuous(limits=c(-0.1, 5*mean(HCONV_summary$ADULTS)+4))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(HCONV_summary$ADULTS)+4), ymax = 1.05*(5*mean(HCONV_summary$ADULTS)+4)) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 0.95*(5*mean(HCONV_summary$ADULTS)+4), label = "Hippodamia convergens", color = "black", size = 4, fontface = "italic", family="sans")
+
 HCONV.year
 
 #######
@@ -1578,7 +1631,7 @@ HCONV.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(l
                data=HCONV_summary, family="quasipoisson")
 summary(HCONV.gam1)
 
-visreg(HCONV.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(HCONV.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -1586,7 +1639,7 @@ HCONV.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT)
                data=HCONV_summary, family="quasipoisson")
 summary(HCONV.gam2)
 
-visreg(HCONV.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(HCONV.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -1641,13 +1694,18 @@ HGLAC.pred$upper<-HGLAC.pred$fit+2*HGLAC.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 HGLAC.year<-ggplot(data=HGLAC.pred, aes(year, fit))+
-  geom_point(data=HGLAC_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=HGLAC_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
+  scale_y_continuous(limits=c(-0.1, 5*mean(HGLAC_summary$ADULTS)+4))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(HGLAC_summary$ADULTS)+4), ymax = 1.05*(5*mean(HGLAC_summary$ADULTS)+4)) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 0.95*(5*mean(HGLAC_summary$ADULTS)+4), label = "Hippodamia glacialis", color = "black", size = 4, fontface = "italic", family="sans")
+
 HGLAC.year
 
 #######
@@ -1656,7 +1714,7 @@ HGLAC.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(l
                 data=HGLAC_summary, family="quasipoisson")
 summary(HGLAC.gam1)
 
-visreg(HGLAC.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(HGLAC.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -1664,7 +1722,7 @@ HGLAC.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT)
                 data=HGLAC_summary, family="quasipoisson")
 summary(HGLAC.gam2)
 
-visreg(HGLAC.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(HGLAC.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -1718,13 +1776,18 @@ HPARN.pred$upper<-HPARN.pred$fit+2*HPARN.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 HPARN.year<-ggplot(data=HPARN.pred, aes(year, fit))+
-  geom_point(data=HPARN_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=HPARN_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
+  scale_y_continuous(limits=c(-0.1, 5*mean(HPARN_summary$ADULTS)+4))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(HPARN_summary$ADULTS)+4), ymax = 1.05*(5*mean(HPARN_summary$ADULTS)+4)) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 0.95*(5*mean(HPARN_summary$ADULTS)+4), label = "Hippodamia parenthesis", color = "black", size = 4, fontface = "italic", family="sans")
+
 HPARN.year
 
 #######
@@ -1733,7 +1796,7 @@ HPARN.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(l
                 data=HPARN_summary, family="quasipoisson")
 summary(HPARN.gam1)
 
-visreg(HPARN.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(HPARN.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -1741,7 +1804,7 @@ HPARN.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT)
                 data=HPARN_summary, family="quasipoisson")
 summary(HPARN.gam2)
 
-visreg(HPARN.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(HPARN.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -1796,13 +1859,18 @@ HVAR.pred$upper<-HVAR.pred$fit+2*HVAR.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 HVAR.year<-ggplot(data=HVAR.pred, aes(year, fit))+
-  geom_point(data=HVAR_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=HVAR_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
+  scale_y_continuous(limits=c(-0.1, 5*mean(HVAR_summary$ADULTS)+4), breaks = seq(0, 5*mean(HVAR_summary$ADULTS)+4, by = 2))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(HVAR_summary$ADULTS)+4), ymax = 1.05*(5*mean(HVAR_summary$ADULTS)+4)) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 0.95*(5*mean(HVAR_summary$ADULTS)+4), label = "Hippodamia variegata", color = "black", size = 4, fontface = "italic", family="sans")
+
 HVAR.year
 
 #######
@@ -1811,7 +1879,7 @@ HVAR.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(lo
                 data=HVAR_summary, family="quasipoisson")
 summary(HVAR.gam1)
 
-visreg(HVAR.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(HVAR.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -1819,7 +1887,7 @@ HVAR.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))
                 data=HVAR_summary, family="quasipoisson")
 summary(HVAR.gam2)
 
-visreg(HVAR.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(HVAR.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -1874,13 +1942,18 @@ PQUA.pred$upper<-PQUA.pred$fit+2*PQUA.pred$se.fit
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
 PQUA.year<-ggplot(data=PQUA.pred, aes(year, fit))+
-  geom_point(data=PQUA_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=PQUA_summary, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
     theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, NA))
+  scale_y_continuous(limits=c(-0.1, 5*mean(PQUA_summary$ADULTS)+4))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(PQUA_summary$ADULTS)+4), ymax = 1.05*(5*mean(PQUA_summary$ADULTS)+4)) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 0.95*(5*mean(PQUA_summary$ADULTS)+4), label = "Propylea quatuordecimpunctata", color = "black", size = 4, fontface = "italic", family="sans")
+
 PQUA.year
 
 #######
@@ -1889,7 +1962,7 @@ PQUA.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(lo
                data=PQUA_summary, family="quasipoisson")
 summary(PQUA.gam1)
 
-visreg(PQUA.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(PQUA.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -1897,7 +1970,7 @@ PQUA.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT))
                data=PQUA_summary, family="quasipoisson")
 summary(PQUA.gam2)
 
-visreg(PQUA.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(PQUA.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -1951,16 +2024,23 @@ native.pred$upper<-native.pred$fit+2*native.pred$se.fit
 
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
+
 native.year<-ggplot(data=native.pred, aes(year, fit))+
   geom_vline(xintercept=c(2000.5, 2005.5, 2015.5), colour="cornsilk4", linetype="longdash")+ 
-  geom_point(data=native, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=native, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='paleturquoise', alpha=0.6)+
   geom_line()+
-  
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, 200))
+  scale_y_continuous(limits=c(-0.1, 60))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+    xmin = -Inf, xmax = Inf, ymin = 56, ymax = 63) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 59, label = "Native species", color = "black", size = 4, fontface = "plain", family="sans")
+
+
+
 native.year
 
 #######
@@ -1969,7 +2049,7 @@ nativetot.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offs
                 data=nativetot, family="quasipoisson")
 summary(nativetot.gam1)
 
-visreg(nativetot.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(nativetot.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -1977,7 +2057,7 @@ nativetot.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_
                 data=nativetot, family="quasipoisson")
 summary(nativetot.gam2)
 
-visreg(nativetot.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(nativetot.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -2145,10 +2225,10 @@ native_trendplot<-ggplot(data=nativetot, aes(year, pertrap))+
            xend = end_firstx, yend = end_nativefirsty, color="black", lty="dashed") +
   #2005 segment
   annotate('segment', x = 2000.5, y = coef(nativesecondmod)[1] + coef(nativesecondmod)[2] * 2000.5, 
-           xend = end_secondx, yend = end_nativesecondy, color="grey", lty="dashed") +
+           xend = end_secondx, yend = end_nativesecondy, color=NULL, lty="dashed") +
   #2015 segment
   annotate('segment', x = 2005.5, y = coef(nativethirdmod)[1] + coef(nativethirdmod)[2] * 2005.5, 
-           xend = end_thirdx, yend = end_nativethirdy, color="grey", lty="dashed") +
+           xend = end_thirdx, yend = end_nativethirdy, color=NULL, lty="dashed") +
   #2023 segment
   annotate('segment', x = 2015.5, y = coef(nativefourthmod)[1] + coef(nativefourthmod)[2] * 2015.5, 
            xend = end_fourthx, yend = end_nativefourthy, color="black", lty="dashed") +
@@ -2160,29 +2240,29 @@ native_trendplot<-ggplot(data=nativetot, aes(year, pertrap))+
   
   #then percent change annotation labels
   #2000 segment
-  annotate('text', x = (1993 + 2000.5) / 2, y = 0.5, 
+  annotate('text', x = (1993 + 2000.5) / 2, y = 0.05, 
            label = mean_textfirst,
-           size = 5, 
+           size = 4, 
            color = "black") + 
   #2005 segment
-  annotate('text', x = (2000.5+2005.5) / 2, y = 0.3, 
+  annotate('text', x = (2000.5+2005.5) / 2, y = 0.05, 
            label = mean_textsecond,
-           size = 5, 
-           color = "grey") +
+           size = 4, 
+           color = NULL) +
   #2015 segment
-  annotate('text', x = (2005.5+2015.5) / 2, y = 0.3, 
+  annotate('text', x = (2005.5+2015.5) / 2, y = 0.05, 
            label = mean_textthird,
-           size = 5, 
-           color = "grey") + 
+           size = 4, 
+           color = NULL) + 
   #2023 segment
-  annotate('text', x = (2015.5+2023) / 2, y = 0.3, 
+  annotate('text', x = (2015.5+2023) / 2, y = 0.05, 
            label = mean_textfourth,
-           size = 5, 
+           size = 4, 
            color = "black") + 
   #overall segment
-  annotate('text', x = 2012, y = 0.55,
+  annotate('text', x = 2012, y = 0.4,
            label = mean_textall,
-           size = 8, 
+           size = 7, 
            color = "black") + 
   
   theme_classic()+
@@ -2212,13 +2292,17 @@ jitter<-position_jitter(width = 0.1, height = 0.02)
 
 invasive.year<-ggplot(data=invasive.pred, aes(year, fit))+
   geom_vline(xintercept=c(2000.5, 2005.5, 2015.5), colour="cornsilk4", linetype="longdash")+ 
-  geom_point(data=invasive, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=invasive, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper),  fill='salmon1', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log',limits=c(-0.1, 200))
+  scale_y_continuous(limits=c(-0.1, 60))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 56, ymax = 63) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 59, label = "Exotic species", color = "black", size = 4, fontface = "plain", family="sans")
 invasive.year
 
 
@@ -2229,7 +2313,7 @@ invasivetot.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+of
                       data=invasivetot, family="quasipoisson")
 summary(invasivetot.gam1)
 
-visreg(invasivetot.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(invasivetot.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -2237,7 +2321,7 @@ invasivetot.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREA
                       data=invasivetot, family="quasipoisson")
 summary(invasivetot.gam2)
 
-visreg(invasivetot.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(invasivetot.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -2400,10 +2484,10 @@ invasive_trendplot<-ggplot(data=invasivetot, aes(year, pertrap))+
   #then regression lines per segment
   #2000 segment
   annotate('segment', x = 1993, y = coef(invasivefirstmod)[1] + coef(invasivefirstmod)[2] * 1993, 
-           xend = end_firstx, yend = end_invasivefirsty, color="grey", lty="dashed") +
+           xend = end_firstx, yend = end_invasivefirsty, color=NULL, lty="dashed") +
   #2005 segment
   annotate('segment', x = 2000.5, y = coef(invasivesecondmod)[1] + coef(invasivesecondmod)[2] * 2000.5, 
-           xend = end_secondx, yend = end_invasivesecondy, color="grey", lty="dashed") +
+           xend = end_secondx, yend = end_invasivesecondy, color=NULL, lty="dashed") +
   #2015 segment
   annotate('segment', x = 2005.5, y = coef(invasivethirdmod)[1] + coef(invasivethirdmod)[2] * 2005.5, 
            xend = end_thirdx, yend = end_invasivethirdy, color="black", lty="dashed") +
@@ -2418,29 +2502,29 @@ invasive_trendplot<-ggplot(data=invasivetot, aes(year, pertrap))+
   
   #then percent change annotation labels
   #2000 segment
-  annotate('text', x = (1993 + 2000.5) / 2, y = 0.2, 
+  annotate('text', x = (1993 + 2000.5) / 2, y = 0.05, 
            label = mean_textfirst,
-           size = 5, 
-           color = "grey") + 
+           size = 4, 
+           color = NULL) + 
   #2005 segment
-  annotate('text', x = (2000.5+2005.5) / 2, y = 0.2, 
+  annotate('text', x = (2000.5+2005.5) / 2, y = 0.05, 
            label = mean_textsecond,
-           size = 5, 
-           color = "grey") +
+           size = 4, 
+           color = NULL) +
   #2015 segment
-  annotate('text', x = (2005.5+2015.5) / 2, y =0.2, 
+  annotate('text', x = (2005.5+2015.5) / 2, y = 0.05, 
            label = mean_textthird,
-           size = 5, 
+           size = 4, 
            color = "black") + 
   #2023 segment
-  annotate('text', x = (2015.5+2023) / 2, y = 0.2 , 
+  annotate('text', x = (2015.5+2023) / 2, y = 0.05 , 
            label = mean_textfourth,
-           size = 5, 
+           size = 4, 
            color = "black") + 
   #overall segment
-  annotate('text', x = 2012, invasivemeanall+0.2,
+  annotate('text', x = 2012, y = 0.9,
            label = mean_textall,
-           size = 8, 
+           size = 7, 
            color = "black") + 
   
   theme_classic()+
@@ -2473,13 +2557,18 @@ jitter<-position_jitter(width = 0.1, height = 0.02)
 
 all_year<-ggplot(data=all_pred, aes(year, fit))+
   geom_vline(xintercept=c(2000.5, 2005.5, 2015.5), colour="cornsilk4", linetype="longdash")+
-  geom_point(data=all_tot, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=all_tot, aes(year, ADULTS), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='grey', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 200))
+  scale_y_continuous(limits=c(-0.1, 60))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 56, ymax = 63) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 59, label = "All species", color = "black", size = 4, fontface = "plain", family="sans")
+
 all_year
 
 
@@ -2489,7 +2578,7 @@ all_tot.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset
                   data=all_tot, family="quasipoisson")
 summary(all_tot.gam1)
 
-visreg(all_tot.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(all_tot.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -2497,7 +2586,7 @@ all_tot.gam2<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CA
                   data=all_tot, family="quasipoisson")
 summary(all_tot.gam2)
 
-visreg(all_tot.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(all_tot.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -2664,13 +2753,13 @@ all__trendplot<-ggplot(data=all_tot, aes(year, pertrap))+
            xend = end_firstx, yend = end_all_firsty, color="black", lty="dashed") +
   #2005 segment
   annotate('segment', x = 2000.5, y = coef(all_secondmod)[1] + coef(all_secondmod)[2] * 2000.5, 
-           xend = end_secondx, yend = end_all_secondy, color="grey", lty="dashed") +
+           xend = end_secondx, yend = end_all_secondy, color=NULL, lty="dashed") +
   #2015 segment
   annotate('segment', x = 2005.5, y = coef(all_thirdmod)[1] + coef(all_thirdmod)[2] * 2005.5, 
            xend = end_thirdx, yend = end_all_thirdy, color="black", lty="dashed") +
   #2023 segment
   annotate('segment', x = 2015.5, y = coef(all_fourthmod)[1] + coef(all_fourthmod)[2] * 2015.5, 
-           xend = end_fourthx, yend = end_all_fourthy, color="grey", lty="dashed") +
+           xend = end_fourthx, yend = end_all_fourthy, color=NULL, lty="dashed") +
   
   #then overall regression
   #overall segment
@@ -2679,29 +2768,29 @@ all__trendplot<-ggplot(data=all_tot, aes(year, pertrap))+
   
   #then percent change annotation labels
   #2000 segment
-  annotate('text', x = (1993 + 2000.5) / 2, y = 0.2, 
+  annotate('text', x = (1993 + 2000.5) / 2, y = 0.05, 
            label = mean_textfirst,
-           size = 5, 
+           size = 4, 
            color = "black") + 
   #2005 segment
-  annotate('text', x = (2000.5+2005.5) / 2, y = 0.2, 
+  annotate('text', x = (2000.5+2005.5) / 2, y = 0.05, 
            label = mean_textsecond,
-           size = 5, 
-           color = "grey") +
+           size = 4, 
+           color = NULL) +
   #2015 segment
-  annotate('text', x = (2005.5+2015.5) / 2, y = 0.2, 
+  annotate('text', x = (2005.5+2015.5) / 2, y = 0.05, 
            label = mean_textthird,
-           size = 5, 
+           size = 4, 
            color = "black") + 
   #2023 segment
-  annotate('text', x = (2015.5+2023) / 2, y = 0.2, 
+  annotate('text', x = (2015.5+2023) / 2, y = 0.05, 
            label = mean_textfourth,
-           size = 5, 
-           color = "grey") + 
+           size = 4, 
+           color = NULL) + 
   #overall segment
-  annotate('text', x = 2012, y = all_meanall+0.2,
+  annotate('text', x = 2012, y = 1,
            label = mean_textall,
-           size = 8, 
+           size = 7, 
            color = "black") + 
   
   theme_classic()+
@@ -2730,13 +2819,18 @@ jitter<-position_jitter(width = 0.1, height = 0.02)
 
 pred_year<-ggplot(data=pred_pred, aes(year, fit))+
   geom_vline(xintercept=c(2000.5, 2005.5, 2015.5), colour="cornsilk4", linetype="longdash")+
-  geom_point(data=pred_tot, aes(year, pred), position = jitter, pch=21, size=1, fill="lightgrey")+
+  geom_point(data=pred_tot, aes(year, pred), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
   geom_ribbon(aes(ymin=lower, ymax=upper), fill='blue', alpha=0.6)+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
   xlab(NULL)+ylab("")+
-  scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 200))
+  scale_y_continuous(limits=c(-0.1, 60))+ 
+  annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
+                    xmin = -Inf, xmax = Inf, ymin = 56, ymax = 63) +
+  # Text on top of the grey box
+  annotate("text", x = 2008, y = 59, label = "Predation potential", color = "black", size = 4, fontface = "plain", family="sans")
+
 pred_year
 
 
@@ -2746,7 +2840,7 @@ predtot.gam1<-gam(pred~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(l
                   data=pred_tot, family="quasipoisson")
 summary(predtot.gam1)
 
-visreg(predtot.gam1, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(predtot.gam1, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -2754,7 +2848,7 @@ predtot.gam2<-gam(pred~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_CAT)
                   data=pred_tot, family="quasipoisson")
 summary(predtot.gam2)
 
-visreg(predtot.gam2, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(predtot.gam2, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log')+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
@@ -2920,7 +3014,7 @@ pred__trendplot<-ggplot(data=pred_tot, aes(year, pertrap))+
            xend = end_firstx, yend = end_pred_firsty, color="black", lty="dashed") +
   #2005 segment
   annotate('segment', x = 2000.5, y = coef(pred_secondmod)[1] + coef(pred_secondmod)[2] * 2000.5, 
-           xend = end_secondx, yend = end_pred_secondy, color="grey", lty="dashed") +
+           xend = end_secondx, yend = end_pred_secondy, color=NULL, lty="dashed") +
   #2015 segment
   annotate('segment', x = 2005.5, y = coef(pred_thirdmod)[1] + coef(pred_thirdmod)[2] * 2005.5, 
            xend = end_thirdx, yend = end_pred_thirdy, color="black", lty="dashed") +
@@ -2935,29 +3029,29 @@ pred__trendplot<-ggplot(data=pred_tot, aes(year, pertrap))+
   
   #then percent change annotation labels
   #2000 segment
-  annotate('text', x = (1993 + 2000.5) / 2, y = 0.2, 
+  annotate('text', x = (1993 + 2000.5) / 2, y = 0.05, 
            label = mean_textfirst,
-           size = 5, 
+           size = 4, 
            color = "black") + 
   #2005 segment
-  annotate('text', x = (2000.5+2005.5) / 2, y = 0.2, 
+  annotate('text', x = (2000.5+2005.5) / 2, y = 0.05, 
            label = mean_textsecond,
-           size = 5, 
-           color = "grey") +
+           size = 4, 
+           color = NULL) +
   #2015 segment
-  annotate('text', x = (2005.5+2015.5) / 2, y = 0.2, 
+  annotate('text', x = (2005.5+2015.5) / 2, y = 0.05, 
            label = mean_textthird,
-           size = 5, 
+           size = 4, 
            color = "black") + 
   #2023 segment
-  annotate('text', x = (2015.5+2023) / 2, y = 0.2 , 
+  annotate('text', x = (2015.5+2023) / 2, y = 0.05 , 
            label = mean_textfourth,
-           size = 5, 
+           size = 4, 
            color = "black") + 
   #overall segment
-  annotate('text', x = 2012, y = pred_meanall+0.2,
+  annotate('text', x = 2012, y = 0.7,
            label = mean_textall,
-           size = 8, 
+           size = 7, 
            color = "black") + 
   
   theme_classic()+
@@ -2970,6 +3064,8 @@ pred__trendplot
 
 ########################################
 library(cowplot)
+library(gridExtra)
+library(grid)
 
 timeseries.stack<-plot_grid( #natives
                             CMAC.year,CYCSP.year,HPARN.year,BURSI.year, CSTIG.year,HGLAC.year,HCONV.year,
@@ -2985,9 +3081,13 @@ pdf("plots/fig3_timeseries_stack.pdf", height=12, width=6)
 grid.draw(timeseries.stack)
 dev.off()
 
-timeseries.grouped<-plot_grid(native.year, invasive.year, all_year, pred_year, 
-                            ncol=1, rel_widths=c(1), labels=c('A', 'B', 'C', 'D'), align="v")
+
+timeseries.grouped<-plot_grid(as_grob(native.year), invasive.year, 
+                                 all_year, pred_year, 
+                            ncol=1, rel_widths=c(1), labels=c('A', 'B', 'C', 'D'))
 timeseries.grouped
+
+
 
 pdf("plots/timeseries_grouped.pdf", height=10, width=6)
 grid.draw(timeseries.grouped)
@@ -3028,7 +3128,7 @@ all_gam_plants<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offs
                     data=nativetot, family="quasipoisson")
 summary(all_gam_plants)
 
-visreg(all_gam_plants, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(all_gam_plants, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -3036,16 +3136,18 @@ all_gam_plants1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT
                      data=nativetot, family="quasipoisson")
 summary(all_gam_plants1)
 
-nativeplot<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures",
+nativeplot<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="capture trend",
                    gg=TRUE, jitter=F, line=list(col="black"), partial=FALSE, rug=FALSE, 
                    fill=list(fill="paleturquoise", col="paleturquoise"),
                    points=list(cex=1, pch=1))+
   scale_y_continuous()+
-  facet_wrap(~TREAT_CAT, ncol = 4)+theme_bw()
+  facet_wrap(~TREAT_CAT, ncol = 4)+theme_bw()+
+  ggtitle("Native species") + 
+  theme(plot.title = element_text(hjust = 0, vjust = 0, size = 14, face = "plain", family = "sans"))
 
 nativeplot
 
-nativeplot1<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures",
+nativeplot1<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="capture trend",
                     gg=TRUE, overlay=T, jitter=F, partial=FALSE, rug=FALSE, 
                     points=list(cex=1, pch=1))+
   scale_y_continuous()+theme_bw()+labs(color='Community type', fill='Community type')
@@ -3056,7 +3158,7 @@ all_gam_plants<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offs
                     data=invasivetot, family="quasipoisson")
 summary(all_gam_plants)
 
-visreg(all_gam_plants, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(all_gam_plants, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -3064,15 +3166,17 @@ all_gam_plants1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT
                      data=invasivetot, family="quasipoisson")
 summary(all_gam_plants1)
 
-invasiveplot<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures",
+invasiveplot<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="capture trend",
                      gg=TRUE, jitter=F, line=list(col="black"), partial=FALSE, rug=FALSE, 
                      fill=list(fill="salmon1", col="salmon1"),
                      points=NULL)+
   scale_y_continuous()+
-  facet_wrap(~TREAT_CAT, ncol = 4)+theme_bw()
+  facet_wrap(~TREAT_CAT, ncol = 4)+theme_bw()+
+  ggtitle("Exotic species") + 
+  theme(plot.title = element_text(hjust = 0, vjust = 0, size = 14, face = "plain", family = "sans"))
 invasiveplot
 
-invasiveplot1<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures",
+invasiveplot1<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="capture trend",
                     gg=TRUE, overlay=T, jitter=F, partial=FALSE, rug=FALSE, 
                     points=list(cex=1, pch=1))+
   scale_y_continuous()+theme_bw()+labs(color='Community type', fill='Community type')
@@ -3084,7 +3188,7 @@ all_gam_plants<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offs
               data=all_tot, family="quasipoisson")
 summary(all_gam_plants)
 
-visreg(all_gam_plants, "year", "TREAT_DESC", ylab="residual captures", gg=TRUE)+
+visreg(all_gam_plants, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -3092,16 +3196,18 @@ all_gam_plants1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT
                     data=all_tot, family="quasipoisson")
 summary(all_gam_plants1)
 
-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures", gg=TRUE)+
+visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
-allplot<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="residual captures",
+allplot<-visreg(all_gam_plants1, "year", "TREAT_CAT", ylab="capture trend",
                  gg=TRUE, jitter=F, line=list(col="black"), partial=FALSE, rug=FALSE, 
                  fill=list(fill="lightgrey", col="lightgrey"),
                  points=NULL)+
   scale_y_continuous()+
-  facet_wrap(~TREAT_CAT, ncol = 4)+theme_bw()
+  facet_wrap(~TREAT_CAT, ncol = 4)+theme_bw()+
+  ggtitle("All species") + 
+  theme(plot.title = element_text(hjust = 0, vjust = 0, size = 14, face = "plain", family = "sans"))
 allplot
 
 
@@ -3118,7 +3224,7 @@ pred_gam_plants<-gam(pred~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offse
                     data=pred_tot, family="quasipoisson")
 summary(pred_gam_plants)
 
-visreg(pred_gam_plants, "year", "TREAT_DESC", ylab="estimated captures", gg=TRUE)+
+visreg(pred_gam_plants, "year", "TREAT_DESC", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_DESC, ncol = 4)
 
@@ -3126,16 +3232,18 @@ pred_gam_plants1<-gam(pred~s(year, sp=smooth.param, k=knots, by=as.factor(TREAT_
                      data=pred_tot, family="quasipoisson")
 summary(pred_gam_plants1)
 
-visreg(pred_gam_plants1, "year", "TREAT_CAT", ylab="estimated captures", gg=TRUE)+
+visreg(pred_gam_plants1, "year", "TREAT_CAT", ylab="capture trend", gg=TRUE)+
   scale_y_continuous(trans='pseudo_log', limits=c(-0.1, 10))+
   facet_wrap(~TREAT_CAT, ncol = 4)
 
-predplot<-visreg(pred_gam_plants1, "year", "TREAT_CAT", ylab="estimated captures",
+predplot<-visreg(pred_gam_plants1, "year", "TREAT_CAT", ylab="capture trend",
                      gg=TRUE, jitter=F, line=list(col="black"), partial=FALSE, rug=FALSE, 
                      fill=list(fill="blue", col="blue"),
                      points=NULL)+
   scale_y_continuous()+
-  facet_wrap(~TREAT_CAT, ncol = 4)+theme_bw()
+  facet_wrap(~TREAT_CAT, ncol = 4)+theme_bw()+
+  ggtitle("Predation potential") + 
+  theme(plot.title = element_text(hjust = 0, vjust = 0, size = 14, face = "plain", family = "sans"))
 predplot
 
 
@@ -3145,7 +3253,7 @@ by.community<-plot_grid(nativeplot, invasiveplot, allplot, predplot,
                               ncol=1, rel_widths=c(1), labels=c('A', 'B', 'C', 'D'), align="v")
 by.community
 
-pdf("plots/fig2_timeseries_by_community.pdf", height=7, width=8)
+pdf("plots/fig2_timeseries_by_community.pdf", height=8, width=8)
 grid.draw(by.community)
 dev.off()
 

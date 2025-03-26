@@ -857,7 +857,7 @@ ABIPN.year<-ggplot(data=ABIPN.pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 5*mean(ABIPN_summary$ADULTS)+4))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(ABIPN_summary$ADULTS)+4), ymax = 1.05*(5*mean(ABIPN_summary$ADULTS)+4)) +
@@ -944,7 +944,7 @@ BURSI.year<-ggplot(data=BURSI.pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 5*mean(BURSI_summary$ADULTS)+4))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(BURSI_summary$ADULTS)+4), ymax = 1.05*(5*mean(BURSI_summary$ADULTS)+4)) +
@@ -1030,7 +1030,7 @@ C7.year<-ggplot(data=C7.pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 5*mean(C7_summary$ADULTS)+4))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(C7_summary$ADULTS)+4), ymax = 1.05*(5*mean(C7_summary$ADULTS)+4)) +
@@ -1116,7 +1116,7 @@ CMAC.year<-ggplot(data=CMAC.pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 5*mean(CMAC_summary$ADULTS)+4))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(CMAC_summary$ADULTS)+4), ymax = 1.05*(5*mean(CMAC_summary$ADULTS)+4)) +
@@ -1199,7 +1199,7 @@ CSTIG.year<-ggplot(data=CSTIG.pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 5*mean(CSTIG_summary$ADULTS)+4), breaks = seq(0, 5*mean(CSTIG_summary$ADULTS)+4, by = 1))+
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(CSTIG_summary$ADULTS)+4), ymax = 1.05*(5*mean(CSTIG_summary$ADULTS)+4)) +
@@ -1283,7 +1283,7 @@ CTRIF.year<-ggplot(data=CTRIF.pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 5*mean(CTRIF_summary$ADULTS)+4))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(CTRIF_summary$ADULTS)+4), ymax = 1.05*(5*mean(CTRIF_summary$ADULTS)+4)) +
@@ -1366,7 +1366,7 @@ CYCSP.year<-ggplot(data=CYCSP.pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 5*mean(CYCSP_summary$ADULTS)+4), breaks = seq(0, 5*mean(CYCSP_summary$ADULTS)+4, by = 2))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(CYCSP_summary$ADULTS)+4), ymax = 1.05*(5*mean(CYCSP_summary$ADULTS)+4)) +
@@ -1450,7 +1450,7 @@ H13.year<-ggplot(data=H13.pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 5*mean(H13_summary$ADULTS)+4))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(H13_summary$ADULTS)+4), ymax = 1.05*(5*mean(H13_summary$ADULTS)+4)) +
@@ -1533,7 +1533,7 @@ HAXY.year<-ggplot(data=HAXY.pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 5*mean(HAXY_summary$ADULTS)+4))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(HAXY_summary$ADULTS)+4), ymax = 1.05*(5*mean(HAXY_summary$ADULTS)+4)) +
@@ -1616,7 +1616,7 @@ HCONV.year<-ggplot(data=HCONV.pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 5*mean(HCONV_summary$ADULTS)+4))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(HCONV_summary$ADULTS)+4), ymax = 1.05*(5*mean(HCONV_summary$ADULTS)+4)) +
@@ -1699,7 +1699,7 @@ HGLAC.year<-ggplot(data=HGLAC.pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 5*mean(HGLAC_summary$ADULTS)+4))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(HGLAC_summary$ADULTS)+4), ymax = 1.05*(5*mean(HGLAC_summary$ADULTS)+4)) +
@@ -1781,7 +1781,7 @@ HPARN.year<-ggplot(data=HPARN.pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 5*mean(HPARN_summary$ADULTS)+4))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(HPARN_summary$ADULTS)+4), ymax = 1.05*(5*mean(HPARN_summary$ADULTS)+4)) +
@@ -1864,7 +1864,7 @@ HVAR.year<-ggplot(data=HVAR.pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 5*mean(HVAR_summary$ADULTS)+4), breaks = seq(0, 5*mean(HVAR_summary$ADULTS)+4, by = 2))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(HVAR_summary$ADULTS)+4), ymax = 1.05*(5*mean(HVAR_summary$ADULTS)+4)) +
@@ -1947,7 +1947,7 @@ PQUA.year<-ggplot(data=PQUA.pred, aes(year, fit))+
   geom_line()+
     theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 5*mean(PQUA_summary$ADULTS)+4))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 0.87*(5*mean(PQUA_summary$ADULTS)+4), ymax = 1.05*(5*mean(PQUA_summary$ADULTS)+4)) +
@@ -2032,7 +2032,7 @@ native.year<-ggplot(data=native.pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 60))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
     xmin = -Inf, xmax = Inf, ymin = 56, ymax = 63) +
@@ -2267,7 +2267,7 @@ native_trendplot<-ggplot(data=nativetot, aes(year, pertrap))+
   
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("per trap")+
   coord_cartesian(ylim=c(0, 1), clip = "off")
 native_trendplot
 
@@ -2297,7 +2297,7 @@ invasive.year<-ggplot(data=invasive.pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 60))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 56, ymax = 63) +
@@ -2529,7 +2529,7 @@ invasive_trendplot<-ggplot(data=invasivetot, aes(year, pertrap))+
   
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("per trap")+
   coord_cartesian(ylim=c(0, 1), clip = "off")
 invasive_trendplot
 
@@ -2562,7 +2562,7 @@ all_year<-ggplot(data=all_pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 60))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 56, ymax = 63) +
@@ -2795,7 +2795,7 @@ all__trendplot<-ggplot(data=all_tot, aes(year, pertrap))+
   
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("per trap")+
   coord_cartesian(ylim=c(0, 1), clip = "off")
 all__trendplot
 
@@ -2824,7 +2824,7 @@ pred_year<-ggplot(data=pred_pred, aes(year, fit))+
   geom_line()+
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 60))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
                     xmin = -Inf, xmax = Inf, ymin = 56, ymax = 63) +
@@ -3056,7 +3056,7 @@ pred__trendplot<-ggplot(data=pred_tot, aes(year, pertrap))+
   
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("")+
+  xlab(NULL)+ylab("per trap")+
   coord_cartesian(ylim=c(0, 1), clip = "off")
 pred__trendplot
 
@@ -3067,14 +3067,16 @@ library(cowplot)
 library(gridExtra)
 library(grid)
 
-timeseries.stack<-plot_grid( #natives
+timeseries.stack<-plot_grid(plot_grid( #natives
                             CMAC.year,CYCSP.year,HPARN.year,BURSI.year, CSTIG.year,HGLAC.year,HCONV.year,
                             ABIPN.year, CTRIF.year,  H13.year,
                             #invasives 
                             C7.year,HAXY.year,PQUA.year, HVAR.year,
                             
                             ncol=2, rel_widths=c(1, 1), labels=c('A', 'B', 'C','D', 'E', 'F',
-                                                                 'G', 'H', 'I', 'J','K', 'L','M','N'), align="v")
+                                                                 'G', 'H', 'I', 'J','K', 'L','M','N'), align="v"),
+                            NULL,  ncol = 1, rel_heights = c(1, 0.03))+ 
+  draw_label("  year", x = 0.5, y = 0, vjust = -1, fontface = "bold")
 timeseries.stack
 
 pdf("plots/fig3_timeseries_stack.pdf", height=12, width=6)
@@ -3103,10 +3105,12 @@ grid.draw(trendplot.grouped)
 dev.off()
 
 
-series_and_trend_grouped<-plot_grid(native.year, native_trendplot, invasive.year, invasive_trendplot, 
-                                    all_year,all__trendplot, pred_year, pred__trendplot, 
-                                    ncol=2, rel_widths=c(1,1), labels=c('A', 'E', 'B', 'F', 'C', 'G', 'D', 'H'),
-                                    align="v")
+series_and_trend_grouped<-plot_grid(plot_grid(native.year, native_trendplot, invasive.year, invasive_trendplot,
+                                              all_year,all__trendplot, pred_year, pred__trendplot,
+                                              ncol=2, rel_widths=c(1,1), labels=c('A', 'E', 'B', 'F', 'C', 'G', 'D', 'H'),
+                                              align="v"),
+                                    NULL,  ncol = 1, rel_heights = c(1, 0.03))+
+  draw_label("  year", x = 0.5, y = 0, vjust = -1, fontface = "bold")
 
 series_and_trend_grouped
 

@@ -820,7 +820,7 @@ pred_tot$pertrap<-pred_tot$pred/pred_tot$TRAPS
 library(mgcv)
 library(visreg)
 library(ggplot2)
-library(tidymv)
+library(tidygam)
 library(grid)
 library(ggbreak)
 library(patchwork)
@@ -2035,14 +2035,10 @@ native.year<-ggplot(data=native.pred, aes(year, fit))+
   xlab(NULL)+ylab("capture trend")+
   scale_y_continuous(limits=c(-0.1, 60))+ 
   annotation_custom(grob = rectGrob(gp = gpar(fill = "grey70", col = "black", alpha = 1)), 
-    xmin = -Inf, xmax = Inf, ymin = 56, ymax = 63) +
+                    xmin = -Inf, xmax = Inf, ymin = 56, ymax = 63) +
   # Text on top of the grey box
   annotate("text", x = 2008, y = 59, label = "Native species", color = "black", size = 4, fontface = "plain", family="sans")
-
-
-
 native.year
-
 #######
 #by plant community or (or community group)
 nativetot.gam1<-gam(ADULTS~s(year, sp=smooth.param, k=knots, by=TREAT_DESC)+offset(log(TRAPS)),
@@ -2075,9 +2071,10 @@ summary(nativeallmod)
 nativestartall<-coef(nativeallmod)[1] + coef(nativeallmod)[2] * 1993
 nativemeanall<-sum(nativetot$ADULTS)/sum(nativetot$TRAPS)
 
-nativeall_perc_change<-100*nativeallmod$coefficients[2]
+end_nativeally<-coef(nativeallmod)[1] + coef(nativeallmod)[2] * 2023
 
-nativeall_perc_change
+nativeall_perc_change<-100*(end_nativeally-nativestartall)/(nativestartall*(2023-1993))
+mean_textall <- round(nativeall_perc_change, 1)
 
 mean_textall <- round(nativeall_perc_change, 1)
 
@@ -2104,12 +2101,6 @@ native8mod<-lm(pertrap~year, data=native8)
 
 summary(native8mod)
 
-nativestart8<-coef(native8mod)[1] + coef(native8mod)[2] * 2019
-nativemean8<-sum(out$ADULTS)/sum(out$TRAPS)
-
-native8_perc_change<-100*native8mod$coefficients[2]
-
-native8_perc_change
 
 ######
 #4-phase analysis and figure
@@ -2129,12 +2120,12 @@ nativefirstmean<-sum(out$ADULTS)/sum(out$TRAPS)
 
 nativefirststart<-coef(nativefirstmod)[1] + coef(nativefirstmod)[2] * 1993
 
-nativefirst_perc_change<-100*nativefirstmod$coefficients[2]
-mean_textfirst <- round(nativefirst_perc_change, 1)
 
 end_firstx <- 2000.5
 end_nativefirsty <- coef(nativefirstmod)[1] + coef(nativefirstmod)[2] * end_firstx
 
+nativefirst_perc_change<-100*(end_nativefirsty-nativefirststart)/(nativefirststart*(7))
+mean_textfirst <- round(nativefirst_perc_change, 1)
 
 
 # 2001-2005
@@ -2150,14 +2141,15 @@ out<-ddply(nativesecond, .(year), summarise,
 
 nativesecondmean<-sum(out$ADULTS)/sum(out$TRAPS)
 
-nativesecondstart<-coef(nativesecondmod)[1] + coef(nativesecondmod)[2] * 2001
+nativesecondstart<-coef(nativesecondmod)[1] + coef(nativesecondmod)[2] * 2000
 
-nativesecond_perc_change<-100*nativesecondmod$coefficients[2]
-mean_textsecond <- round(nativesecond_perc_change, 1)
+
 
 end_secondx <- 2005.5
 end_nativesecondy <- coef(nativesecondmod)[1] + coef(nativesecondmod)[2] * end_secondx
 
+nativesecond_perc_change<-100*(end_nativesecondy-nativesecondstart)/(nativesecondstart*(5))
+mean_textsecond <- round(nativesecond_perc_change, 1)
 
 # 2006-2015
 nativethird<-subset(nativetot, year >= 2006 & year<=2015)
@@ -2174,12 +2166,13 @@ nativethirdmean<-sum(out$ADULTS)/sum(out$TRAPS)
 
 nativethirdstart<-coef(nativethirdmod)[1] + coef(nativethirdmod)[2] * 2006
 
-nativethird_perc_change<-100*nativethirdmod$coefficients[2]
-mean_textthird <- round(nativethird_perc_change, 1)
-mean_textthird <-"0.0"
 
 end_thirdx <- 2015.5
 end_nativethirdy <- coef(nativethirdmod)[1] + coef(nativethirdmod)[2] * end_thirdx
+
+nativethird_perc_change<-100*(end_nativethirdy-nativethirdstart)/(nativethirdstart*(10))
+mean_textthird <- round(nativethird_perc_change, 1)
+mean_textthird <-"0.0"
 
 # 2016-2023
 nativefourth<-subset(nativetot, year >= 2016)
@@ -2201,6 +2194,9 @@ mean_textfourth <- round(nativefourth_perc_change, 1)
 
 end_fourthx <- 2023
 end_nativefourthy <- coef(nativefourthmod)[1] + coef(nativefourthmod)[2] * end_fourthx
+
+nativefourth_perc_change<-100*(end_nativefourthy-nativefourthstart)/(nativefourthstart*(8))
+mean_textfourth <- format(round(nativefourth_perc_change, 1), nsmall=1)
 
 
 native_trendplot<-ggplot(data=nativetot, aes(year, pertrap))+
@@ -2240,36 +2236,37 @@ native_trendplot<-ggplot(data=nativetot, aes(year, pertrap))+
   
   #then percent change annotation labels
   #2000 segment
-  annotate('text', x = (1993 + 2000.5) / 2, y = 0.05, 
+  annotate('text', x = (1993 + 2000.5) / 2, y = 0.5, 
            label = mean_textfirst,
-           size = 4, 
+           size = 5, 
            color = "black") + 
   #2005 segment
-  annotate('text', x = (2000.5+2005.5) / 2, y = 0.05, 
+  annotate('text', x = (2000.5+2005.5) / 2, y = 0.3, 
            label = mean_textsecond,
-           size = 4, 
+           size = 5, 
            color = NULL) +
   #2015 segment
-  annotate('text', x = (2005.5+2015.5) / 2, y = 0.05, 
+  annotate('text', x = (2005.5+2015.5) / 2, y = 0.3, 
            label = mean_textthird,
-           size = 4, 
+           size = 5, 
            color = NULL) + 
   #2023 segment
-  annotate('text', x = (2015.5+2023) / 2, y = 0.05, 
+  annotate('text', x = (2015.5+2023) / 2, y = 0.3, 
            label = mean_textfourth,
-           size = 4, 
+           size = 5, 
            color = "black") + 
   #overall segment
-  annotate('text', x = 2012, y = 0.4,
+  annotate('text', x = 2012, y = 0.55,
            label = mean_textall,
            size = 7, 
            color = "black") + 
   
   theme_classic()+
   xlim(1993, 2023)+
-  xlab(NULL)+ylab("per trap")+
+  xlab(NULL)+ylab("")+
   coord_cartesian(ylim=c(0, 1), clip = "off")
 native_trendplot
+
 
 
 ##########################################
@@ -2336,8 +2333,9 @@ summary(invasiveallmod)
 
 invasivestartall<-coef(invasiveallmod)[1] + coef(invasiveallmod)[2] * 1993
 invasivemeanall<-sum(invasivetot$ADULTS)/sum(invasivetot$TRAPS)
+invasiveend<-coef(invasiveallmod)[1] + coef(invasiveallmod)[2] * 2023
 
-invasiveall_perc_change<-100*invasiveallmod$coefficients[2]
+invasiveall_perc_change<-100*(invasiveend-invasivestartall)/(invasivestartall*31)
 
 invasiveall_perc_change
 
@@ -2366,12 +2364,7 @@ invasive8mod<-lm(pertrap~year, data=invasive8)
 
 summary(invasive8mod)
 
-invasivestart8<-coef(invasive8mod)[1] + coef(invasive8mod)[2] * 2016
-invasivemean8<-sum(out$ADULTS)/sum(out$TRAPS)
 
-invasive8_perc_change<-100*invasive8mod$coefficients[2]
-
-invasive8_perc_change
 
 
 ######
@@ -2392,12 +2385,12 @@ invasivefirstmean<-sum(out$ADULTS)/sum(out$TRAPS)
 
 invasivefirststart<-coef(invasivefirstmod)[1] + coef(invasivefirstmod)[2] * 1993
 
-invasivefirst_perc_change<-100*invasivefirstmod$coefficients[2]
-mean_textfirst <- round(invasivefirst_perc_change, 1)
 
 end_firstx <- 2000.5
 end_invasivefirsty <- coef(invasivefirstmod)[1] + coef(invasivefirstmod)[2] * end_firstx
 
+invasivefirst_perc_change<-100*(end_invasivefirsty-invasivefirststart)/(invasivefirststart*(7))
+mean_textfirst <- round(invasivefirst_perc_change, 1)
 
 
 # 2001-2005
@@ -2413,14 +2406,15 @@ out<-ddply(invasivesecond, .(year), summarise,
 
 invasivesecondmean<-sum(out$ADULTS)/sum(out$TRAPS)
 
-invasivesecondstart<-coef(invasivesecondmod)[1] + coef(invasivesecondmod)[2] * 2001
+invasivesecondstart<-coef(invasivesecondmod)[1] + coef(invasivesecondmod)[2] * 2000
 
-invasivesecond_perc_change<-100*invasivesecondmod$coefficients[2]
-mean_textsecond <- round(invasivesecond_perc_change, 1)
+
 
 end_secondx <- 2005.5
 end_invasivesecondy <- coef(invasivesecondmod)[1] + coef(invasivesecondmod)[2] * end_secondx
 
+invasivesecond_perc_change<-100*(end_invasivesecondy-invasivesecondstart)/(invasivesecondstart*(5))
+mean_textsecond <- round(invasivesecond_perc_change, 1)
 
 # 2006-2015
 invasivethird<-subset(invasivetot, year >= 2006 & year<=2015)
@@ -2437,11 +2431,13 @@ invasivethirdmean<-sum(out$ADULTS)/sum(out$TRAPS)
 
 invasivethirdstart<-coef(invasivethirdmod)[1] + coef(invasivethirdmod)[2] * 2006
 
-invasivethird_perc_change<-100*invasivethirdmod$coefficients[2]
-mean_textthird <- round(invasivethird_perc_change, 1)
 
 end_thirdx <- 2015.5
 end_invasivethirdy <- coef(invasivethirdmod)[1] + coef(invasivethirdmod)[2] * end_thirdx
+
+invasivethird_perc_change<-100*(end_invasivethirdy-invasivethirdstart)/(invasivethirdstart*(10))
+mean_textthird <- round(invasivethird_perc_change, 1)
+
 
 # 2016-2023
 invasivefourth<-subset(invasivetot, year >= 2016)
@@ -2464,6 +2460,8 @@ mean_textfourth <- round(invasivefourth_perc_change, 1)
 end_fourthx <- 2023
 end_invasivefourthy <- coef(invasivefourthmod)[1] + coef(invasivefourthmod)[2] * end_fourthx
 
+invasivefourth_perc_change<-100*(end_invasivefourthy-invasivefourthstart)/(invasivefourthstart*(8))
+mean_textfourth <- format(round(invasivefourth_perc_change, 1), nsmall=1)
 
 invasive_trendplot<-ggplot(data=invasivetot, aes(year, pertrap))+
   geom_vline(xintercept=c(2000.5, 2005.5, 2015.5), colour="cornsilk4", linetype="longdash")+
@@ -2603,7 +2601,9 @@ summary(all_allmod)
 all_startall<-coef(all_allmod)[1] + coef(all_allmod)[2] * 1993
 all_meanall<-sum(all_tot$ADULTS)/sum(all_tot$TRAPS)
 
-all_all_perc_change<-100*all_allmod$coefficients[2]
+all_endall <- coef(all_allmod)[1] + coef(all_allmod)[2] * 2023
+
+all_all_perc_change<-100*(all_endall-all_startall)/(all_startall*(31))
 
 all_all_perc_change
 
@@ -2632,12 +2632,6 @@ all_8mod<-lm(pertrap~year, data=all_8)
 
 summary(all_8mod)
 
-all_start8<-coef(all_8mod)[1] + coef(all_8mod)[2] * 2016
-all_mean8<-sum(out$ADULTS)/sum(out$TRAPS)
-
-all_8_perc_change<-100*all_8mod$coefficients[2]
-
-all_8_perc_change
 
 
 ######
@@ -2658,11 +2652,11 @@ all_firstmean<-sum(out$ADULTS)/sum(out$TRAPS)
 
 all_firststart<-coef(all_firstmod)[1] + coef(all_firstmod)[2] * 1993
 
-all_first_perc_change<-100*all_firstmod$coefficients[2]
-mean_textfirst <- round(all_first_perc_change, 1)
-
 end_firstx <- 2000.5
 end_all_firsty <- coef(all_firstmod)[1] + coef(all_firstmod)[2] * end_firstx
+
+all_first_perc_change<-100*(end_all_firsty-all_firststart)/(all_firststart*(7))
+mean_textfirst <- round(all_first_perc_change, 1)
 
 
 
@@ -2681,11 +2675,11 @@ all_secondmean<-sum(out$ADULTS)/sum(out$TRAPS)
 
 all_secondstart<-coef(all_secondmod)[1] + coef(all_secondmod)[2] * 2001
 
-all_second_perc_change<-100*all_secondmod$coefficients[2]
-mean_textsecond <- round(all_second_perc_change, 1)
-
 end_secondx <- 2005.5
 end_all_secondy <- coef(all_secondmod)[1] + coef(all_secondmod)[2] * end_secondx
+
+all_second_perc_change<-100*(end_all_secondy-all_secondstart)/(all_secondstart*(5))
+mean_textsecond <- round(all_second_perc_change, 1)
 
 
 # 2006-2015
@@ -2703,11 +2697,11 @@ all_thirdmean<-sum(out$ADULTS)/sum(out$TRAPS)
 
 all_thirdstart<-coef(all_thirdmod)[1] + coef(all_thirdmod)[2] * 2006
 
-all_third_perc_change<-100*all_thirdmod$coefficients[2]
-mean_textthird <- round(all_third_perc_change, 1)
-
 end_thirdx <- 2015.5
 end_all_thirdy <- coef(all_thirdmod)[1] + coef(all_thirdmod)[2] * end_thirdx
+
+all_third_perc_change<-100*(end_all_thirdy-all_thirdstart)/(all_thirdstart*(10))
+mean_textthird <- round(all_third_perc_change, 1)
 
 # 2016-2023
 all_fourth<-subset(all_tot, year >= 2016)
@@ -2724,11 +2718,11 @@ all_fourthmean<-sum(out$ADULTS)/sum(out$TRAPS)
 
 all_fourthstart<-coef(all_fourthmod)[1] + coef(all_fourthmod)[2] * 2016
 
-all_fourth_perc_change<-100*all_fourthmod$coefficients[2]
-mean_textfourth <- round(all_fourth_perc_change, 1)
-
 end_fourthx <- 2023
 end_all_fourthy <- coef(all_fourthmod)[1] + coef(all_fourthmod)[2] * end_fourthx
+
+all_fourth_perc_change<-100*(end_all_fourthy-all_fourthstart)/(all_fourthstart*(8))
+mean_textfourth <- format(round(all_fourth_perc_change, 1), nsmall=1)
 
 
 all__trendplot<-ggplot(data=all_tot, aes(year, pertrap))+
@@ -2817,6 +2811,7 @@ pred_pred$upper<-pred_pred$fit+2*pred_pred$se.fit
 
 jitter<-position_jitter(width = 0.1, height = 0.02)
 
+
 pred_year<-ggplot(data=pred_pred, aes(year, fit))+
   geom_vline(xintercept=c(2000.5, 2005.5, 2015.5), colour="cornsilk4", linetype="longdash")+
   geom_point(data=pred_tot, aes(year, pred), position = jitter, pch=21, size=1, fill="lightgrey", col="grey70")+
@@ -2832,7 +2827,6 @@ pred_year<-ggplot(data=pred_pred, aes(year, fit))+
   annotate("text", x = 2008, y = 59, label = "Predation potential", color = "black", size = 4, fontface = "plain", family="sans")
 
 pred_year
-
 
 #######
 #by plant community or (or community group)
@@ -2864,7 +2858,9 @@ summary(pred_allmod)
 pred_startall<-coef(pred_allmod)[1] + coef(pred_allmod)[2] * 1993
 pred_meanall<-sum(pred_tot$pred)/sum(pred_tot$TRAPS)
 
-pred_all_perc_change<-100*pred_allmod$coefficients[2]
+end_pred_all <- coef(pred_allmod)[1] + coef(pred_allmod)[2] * 2023
+
+pred_all_perc_change<-100*(end_pred_all-pred_startall)/(pred_startall*(31))
 
 pred_all_perc_change
 
@@ -2896,9 +2892,7 @@ summary(pred_8mod)
 pred_start8<-coef(pred_8mod)[1] + coef(pred_8mod)[2] * 2016
 pred_mean8<-sum(out$pred)/sum(out$TRAPS)
 
-pred_8_perc_change<-100*pred_8mod$coefficients[2]
 
-pred_8_perc_change
 
 
 ######
@@ -2919,11 +2913,13 @@ pred_firstmean<-sum(out$pred)/sum(out$TRAPS)
 
 pred_firststart<-coef(pred_firstmod)[1] + coef(pred_firstmod)[2] * 1993
 
-pred_first_perc_change<-100*pred_firstmod$coefficients[2]
-mean_textfirst <- round(pred_first_perc_change, 1)
-
 end_firstx <- 2000.5
 end_pred_firsty <- coef(pred_firstmod)[1] + coef(pred_firstmod)[2] * end_firstx
+
+pred_first_perc_change<-100*(end_pred_firsty-pred_firststart)/(pred_firststart*(7))
+mean_textfirst <- round(pred_first_perc_change, 1)
+
+
 
 
 
@@ -2942,11 +2938,11 @@ pred_secondmean<-sum(out$pred)/sum(out$TRAPS)
 
 pred_secondstart<-coef(pred_secondmod)[1] + coef(pred_secondmod)[2] * 2001
 
-pred_second_perc_change<-100*pred_secondmod$coefficients[2]
-mean_textsecond <- round(pred_second_perc_change, 1)
-
 end_secondx <- 2005.5
-end_pred_secondy <- coef(pred_secondmod)[1] + coef(pred_secondmod)[2] * end_secondx
+end_predsecondy <- coef(pred_secondmod)[1] + coef(pred_secondmod)[2] * end_secondx
+
+predsecond_perc_change<-100*(end_predsecondy-pred_secondstart)/(pred_secondstart*(5))
+mean_textsecond <- round(predsecond_perc_change, 1)
 
 
 # 2006-2015
@@ -2964,11 +2960,11 @@ pred_thirdmean<-sum(out$pred)/sum(out$TRAPS)
 
 pred_thirdstart<-coef(pred_thirdmod)[1] + coef(pred_thirdmod)[2] * 2006
 
-pred_third_perc_change<-100*pred_thirdmod$coefficients[2]
-mean_textthird <- round(pred_third_perc_change, 1)
-
 end_thirdx <- 2015.5
-end_pred_thirdy <- coef(pred_thirdmod)[1] + coef(pred_thirdmod)[2] * end_thirdx
+end_predthirdy <- coef(pred_thirdmod)[1] + coef(pred_thirdmod)[2] * end_thirdx
+
+predthird_perc_change<-100*(end_predthirdy-pred_thirdstart)/(pred_thirdstart*(10))
+mean_textthird <- round(predthird_perc_change, 1)
 
 # 2016-2023
 pred_fourth<-subset(pred_tot, year >= 2016)
@@ -2985,11 +2981,11 @@ pred_fourthmean<-sum(out$pred)/sum(out$TRAPS)
 
 pred_fourthstart<-coef(pred_fourthmod)[1] + coef(pred_fourthmod)[2] * 2016
 
-pred_fourth_perc_change<-100*pred_fourthmod$coefficients[2]
-mean_textfourth <- round(pred_fourth_perc_change, 1)
-
 end_fourthx <- 2023
 end_pred_fourthy <- coef(pred_fourthmod)[1] + coef(pred_fourthmod)[2] * end_fourthx
+
+pred_fourth_perc_change<-100*(end_pred_fourthy-pred_fourthstart)/(pred_fourthstart*(8))
+mean_textfourth <- format(round(pred_fourth_perc_change, 1), nsmall=1)
 
 
 pred__trendplot<-ggplot(data=pred_tot, aes(year, pertrap))+
@@ -3014,10 +3010,10 @@ pred__trendplot<-ggplot(data=pred_tot, aes(year, pertrap))+
            xend = end_firstx, yend = end_pred_firsty, color="black", lty="dashed") +
   #2005 segment
   annotate('segment', x = 2000.5, y = coef(pred_secondmod)[1] + coef(pred_secondmod)[2] * 2000.5, 
-           xend = end_secondx, yend = end_pred_secondy, color=NULL, lty="dashed") +
+           xend = end_secondx, yend = end_predsecondy, color=NULL, lty="dashed") +
   #2015 segment
   annotate('segment', x = 2005.5, y = coef(pred_thirdmod)[1] + coef(pred_thirdmod)[2] * 2005.5, 
-           xend = end_thirdx, yend = end_pred_thirdy, color="black", lty="dashed") +
+           xend = end_thirdx, yend = end_predthirdy, color="black", lty="dashed") +
   #2023 segment
   annotate('segment', x = 2015.5, y = coef(pred_fourthmod)[1] + coef(pred_fourthmod)[2] * 2015.5, 
            xend = end_fourthx, yend = end_pred_fourthy, color="black", lty="dashed") +
@@ -3114,7 +3110,7 @@ series_and_trend_grouped<-plot_grid(plot_grid(native.year, native_trendplot, inv
 
 series_and_trend_grouped
 
-pdf("plots/fig1_series_and_trend_grouped.pdf", height=10, width=10)
+pdf("plots/fig1_series_and_trend_grouped_v2.pdf", height=10, width=10)
 grid.draw(series_and_trend_grouped)
 dev.off()
 
